@@ -1,0 +1,55 @@
+package com.slaruva.sollertiamonitoring;
+
+import android.app.AlarmManager;
+import android.app.IntentService;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+
+import java.util.List;
+import java.util.Vector;
+
+/**
+ * The service that responses for execution all tasks in background
+ */
+public class TaskManagerService extends IntentService {
+
+    public static final int ALARM_ID = 33333;
+
+    /**
+     * Sets up AlarmManager
+     * @param context current context
+     */
+    public static void setAlarm(Context context) {
+        Log.d("Sollertia", "Setting alarm...");
+        Intent intent = new Intent(context, TaskManagerService.class);
+        PendingIntent pi = PendingIntent.getService(context, ALARM_ID, intent, 0);
+        AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
+        am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,   //there is no need to wake up device
+                AlarmManager.INTERVAL_HOUR,
+                AlarmManager.INTERVAL_HOUR, pi);
+    }
+
+    public TaskManagerService() { super("TaskManagerService"); }
+
+    /**
+     * Retrieves all available tasks of all types and adds them into
+     * a single vector.
+     * @return list of all tasks
+     */
+    public static List<Task> getAllTasks() {
+        List<Task> list = new Vector<Task>();
+        list.addAll(PortCheck.listAll(PortCheck.class));    //TODO add other tasks
+        return list;
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent) {
+        Log.d("Sollertia", "Executing tasks...");
+        List<Task> tasks = getAllTasks();
+        for(Task t : tasks) {
+            t.execute(this);
+        }
+    }
+}
