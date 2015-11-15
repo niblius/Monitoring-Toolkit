@@ -25,13 +25,15 @@ public class Sollertia extends Application {
         doFirstTimeRoutine();
     }
 
+    private static final String PREFERENCE_WAS_PREVIOUSLY_STARTED =
+            "PREFERENCE_WAS_PREVIOUSLY_STARTED";
     private void doFirstTimeRoutine() {
         //TODO greetings
         boolean wasStated = sharedPref.getBoolean(
-                getString(R.string.was_previously_started), Boolean.FALSE);
+                PREFERENCE_WAS_PREVIOUSLY_STARTED, Boolean.FALSE);
         if(!wasStated) {
             SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putBoolean(getString(R.string.was_previously_started), Boolean.TRUE);
+            editor.putBoolean(PREFERENCE_WAS_PREVIOUSLY_STARTED, Boolean.TRUE);
             editor.commit();
             TaskManagerService.setAlarm(this);
         }

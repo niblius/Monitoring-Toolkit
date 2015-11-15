@@ -6,11 +6,10 @@
     <string name="invalid_port">"Invalid port"</string>
     <string name="invalid_ip">Invalid IP</string>
     <string name="create_button">Create</string>
-
-    <string name="preference_main">com.slaruva.sollertiamonitoring.PREFERENCE_MAIN</string>
-    <string name="was_previously_started">PREFERENCE_WAS_PREVIOUSLY_STARTED</string>
     <string name="fail">fail</string>
     <string name="unknown_host">unknown host</string>
     <string name="error">error</string>
     <string name="success">success</string>
+
+    <string name="preference_main">com.slaruva.sollertiamonitoring.PREFERENCE_MAIN</string>
 </resources>

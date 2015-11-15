@@ -1,6 +1,7 @@
 package com.slaruva.sollertiamonitoring;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.View;
 
 /**
@@ -14,12 +15,17 @@ public interface Task {
      */
     public void execute(Context context);
 
-    //public View toView();
-
     /**
      * Represents the task (briefly) in View object
      * @param context current context
      * @return View object
      */
-    public View getRowView(Context context, View rowView);
+    public View getRowView(Context context, View lastRowView);
+
+    /**
+     * Represents the task (completely) in Activity
+     * and returns intent to that activity
+     * @return
+     */
+    public Intent getIntentToDetailedInfo(Context context);
 }

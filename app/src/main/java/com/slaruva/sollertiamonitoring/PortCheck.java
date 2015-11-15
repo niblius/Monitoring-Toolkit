@@ -2,6 +2,7 @@ package com.slaruva.sollertiamonitoring;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,6 +62,7 @@ public class PortCheck extends SugarRecord implements Task {
 
     @Override
     public View getRowView(Context context, View rowView) {
+        //TODO colors depending on logs
         if(rowView == null) {
             LayoutInflater inflater = (LayoutInflater)
                     context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -73,6 +75,14 @@ public class PortCheck extends SugarRecord implements Task {
         portView.setText(""+port);
 
         return rowView;
+    }
+
+    public static final String PORT_CHECK_ID = "PORT_CHECK_ID";
+    @Override
+    public Intent getIntentToDetailedInfo(Context context) {
+        Intent i = new Intent(context, PortCheckActivity.class);
+        i.putExtra(PORT_CHECK_ID, this.getId().longValue());
+        return i;
     }
 
     public String getIp() {

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.List;
@@ -25,6 +26,14 @@ public class MainActivity extends AppCompatActivity {
         tasks = TaskManagerService.getAllTasks();
         adapter = new TasksAdapter(tasks);
         taskList.setAdapter(adapter);
+        taskList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent i = ((Task)parent.getItemAtPosition(position))
+                        .getIntentToDetailedInfo(MainActivity.this);
+                startActivity(i);
+            }
+        });
     }
 
     /**
