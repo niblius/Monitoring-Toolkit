@@ -3,8 +3,8 @@ package com.slaruva.sollertiamonitoring;
 
 import android.content.Context;
 import android.util.Patterns;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.orm.SugarRecord;
@@ -16,9 +16,6 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.security.InvalidParameterException;
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Locale;
 
 
 /**
@@ -63,29 +60,19 @@ public class PortCheck extends SugarRecord implements Task {
     }
 
     @Override
-    public View toIndexView(Context context) {
-        LinearLayout container = new LinearLayout(context);
-        container.setOrientation(LinearLayout.VERTICAL);
-        TextView address = new TextView(context);
-        address.setText(ip + ": " + port);
-        container.addView(address);
-
-        LinearLayout logContainer = new LinearLayout(context);
-        logContainer.setOrientation(LinearLayout.VERTICAL);
-        logContainer.setLeft(5);
-        List<PortCheckLog> logs = PortCheckLog.find(PortCheckLog.class, "task_parent = ?",
-                new String[]{this.getId().toString()}, null, "ID DESC", "5");
-        SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US);
-
-        for(PortCheckLog log : logs) {
-            TextView tv = new TextView(context);
-            tv.setText(log.getDatetime(format) + ": " + log.getResponse());
-            logContainer.addView(tv);
+    public View getRowView(Context context, View rowView) {
+        if(rowView == null) {
+            LayoutInflater inflater = (LayoutInflater)
+                    context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            rowView = inflater.inflate(R.layout.row_port_check, null);
         }
 
-        container.addView(logContainer);
+        TextView ipView = (TextView)rowView.findViewById(R.id.ip);
+        ipView.setText(ip);
+        TextView portView = (TextView)rowView.findViewById(R.id.port);
+        portView.setText(""+port);
 
-        return container;
+        return rowView;
     }
 
     public String getIp() {

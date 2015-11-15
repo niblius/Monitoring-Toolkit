@@ -21,5 +21,5 @@ public interface Task {
      * @param context current context
      * @return View object
      */
-    public View toIndexView(Context context);
+    public View getRowView(Context context, View rowView);
 }

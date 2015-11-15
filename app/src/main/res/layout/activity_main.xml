@@ -24,13 +24,13 @@
         <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content">
-            <LinearLayout
+            <ListView
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/task_list"
                 android:nestedScrollingEnabled="false">
-        </LinearLayout>
+        </ListView>
         </ScrollView>
     </LinearLayout>
 

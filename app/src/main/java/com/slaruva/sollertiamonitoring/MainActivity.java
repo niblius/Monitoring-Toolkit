@@ -4,7 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.ListView;
 
 import java.util.List;
 
@@ -13,25 +13,18 @@ import java.util.List;
  * all current tasks
  */
 public class MainActivity extends AppCompatActivity {
+    List<Task> tasks;
+    TasksAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
 
-    /**
-     * Currently works as Index page
-     */
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        ViewGroup taskList = (ViewGroup)findViewById(R.id.task_list);
-        taskList.removeAllViews();
-        List<Task> tasks = TaskManagerService.getAllTasks();
-        for(Task t : tasks) {
-            taskList.addView(t.toIndexView(this));
-        }
+        ListView taskList = (ListView)findViewById(R.id.task_list);
+        tasks = TaskManagerService.getAllTasks();
+        adapter = new TasksAdapter(tasks);
+        taskList.setAdapter(adapter);
     }
 
     /**
