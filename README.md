@@ -1,0 +1,1 @@
+VCS -> Checkout from version control -> Git -> type in our git repository address (ending with sollertia-mobile.git) -> select any parent directory -> in field "Directory Name" type "SollertiaMonitoring" (its important! only this name works) -> press ok -> This is it!
