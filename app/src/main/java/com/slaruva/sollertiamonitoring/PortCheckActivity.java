@@ -8,14 +8,19 @@ import android.widget.TextView;
 import java.util.List;
 
 public class PortCheckActivity extends AppCompatActivity {
-    List<PortCheckLog> logs;
-    PortCheckLogsAdapter adapter;
-
-    //TODO onClick mark viewed + colors
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_port_check);
+    }
+
+    //TODO onClick mark viewed + colors
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        List<PortCheckLog> logs;
+        PortCheckLogsAdapter adapter;
         long pcId = getIntent().getExtras().getLong(PortCheck.PORT_CHECK_ID);
         PortCheck pc = PortCheck.findById(PortCheck.class, pcId);
 

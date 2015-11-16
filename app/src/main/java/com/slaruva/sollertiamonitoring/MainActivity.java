@@ -14,14 +14,18 @@ import java.util.List;
  * all current tasks
  */
 public class MainActivity extends AppCompatActivity {
-    List<Task> tasks;
-    TasksAdapter adapter;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        List<Task> tasks;
+        TasksAdapter adapter;
         ListView taskList = (ListView)findViewById(R.id.task_list);
         tasks = TaskManagerService.getAllTasks();
         adapter = new TasksAdapter(tasks);
@@ -29,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
         taskList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Intent i = ((Task)parent.getItemAtPosition(position))
+                Intent i = ((Task) parent.getItemAtPosition(position))
                         .getIntentToDetailedInfo(MainActivity.this);
                 startActivity(i);
             }
