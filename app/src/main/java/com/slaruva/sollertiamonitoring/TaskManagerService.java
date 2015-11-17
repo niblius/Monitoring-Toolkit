@@ -27,8 +27,10 @@ public class TaskManagerService extends IntentService {
         PendingIntent pi = PendingIntent.getService(context, ALARM_ID, intent, 0);
         AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
         am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,   //there is no need to wake up device
-                AlarmManager.INTERVAL_HOUR,
-                AlarmManager.INTERVAL_HOUR, pi);
+                AlarmManager.INTERVAL_FIFTEEN_MINUTES,
+                AlarmManager.INTERVAL_FIFTEEN_MINUTES, pi);
+        /*am.setRepeating(AlarmManager.ELAPSED_REALTIME,
+                10000, 20000, pi);*/
     }
 
     public TaskManagerService() { super("TaskManagerService"); }
