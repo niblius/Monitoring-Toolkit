@@ -2,12 +2,16 @@ package com.slaruva.sollertiamonitoring;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.List;
 
 public class PortCheckActivity extends AppCompatActivity {
+    private PortCheck pc;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,11 +26,11 @@ public class PortCheckActivity extends AppCompatActivity {
         List<PortCheckLog> logs;
         PortCheckLogsAdapter adapter;
         long pcId = getIntent().getExtras().getLong(PortCheck.PORT_CHECK_ID);
-        PortCheck pc = PortCheck.findById(PortCheck.class, pcId);
+        pc = PortCheck.findById(PortCheck.class, pcId);
 
-        TextView ip = (TextView)findViewById(R.id.ip);
+        EditText ip = (EditText)findViewById(R.id.ip);
         ip.setText(pc.getIp());
-        TextView port = (TextView)findViewById(R.id.port);
+        EditText port = (EditText)findViewById(R.id.port);
         port.setText("" + pc.getPort());
 
         ListView logList = (ListView)findViewById(R.id.log_list);
@@ -35,4 +39,16 @@ public class PortCheckActivity extends AppCompatActivity {
         logList.setAdapter(adapter);
     }
 
+    public void save(View v) {
+        EditText ip = (EditText)findViewById(R.id.ip);
+        pc.setIp(ip.getText().toString());
+        EditText port = (EditText)findViewById(R.id.port);
+        pc.setPort(Integer.parseInt(port.getText().toString()));
+        pc.save();
+    }
+
+    public void delete(View v) {
+        pc.delete();
+        this.finish();
+    }
 }

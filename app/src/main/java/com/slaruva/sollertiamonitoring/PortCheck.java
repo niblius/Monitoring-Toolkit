@@ -146,7 +146,7 @@ public class PortCheck extends SugarRecord implements Task {
         return true;
     }
 
-    public PortCheck(String ip, int port) throws InvalidParameterException{
+    public PortCheck(String ip, int port) throws InvalidParameterException {
         if(!setIp(ip)) {
             throw new InvalidParameterException("Invalid IP.");
         }

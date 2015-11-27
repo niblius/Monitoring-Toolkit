@@ -10,6 +10,16 @@
     <string name="unknown_host">unknown host</string>
     <string name="error">error</string>
     <string name="success">success</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+
+    <string-array name="tasks_array">
+        <item>Ping specific port</item>
+        <item>Ping</item>
+        <item>Check log</item>
+    </string-array>
 
     <string name="preference_main">com.slaruva.sollertiamonitoring.PREFERENCE_MAIN</string>
+    <string name="what_type_of_task">What type of task would you like to create?</string>
+    <string name="back">Back</string>
 </resources>

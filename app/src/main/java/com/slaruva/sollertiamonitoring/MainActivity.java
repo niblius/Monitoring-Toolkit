@@ -1,5 +1,6 @@
 package com.slaruva.sollertiamonitoring;
 
+import android.app.DialogFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -40,14 +41,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    private final static String DIALOG_TAG = "CREATE_NEW_TASK_DIALOG";
     /**
      * OnClick method for button "Create new task", moves us to CreatePortCheckActivity
      * in future will display dialog with dropdown list of available task types.
      * @param view
      */
     public void gotoCreateTaskActivity(View view) {
-        Intent i = new Intent(this, CreatePortCheckActivity.class);
-        startActivity(i);
+        DialogFragment df = new CreateTaskDialog();
+        df.show(getFragmentManager(), DIALOG_TAG);
     }
 
 }
