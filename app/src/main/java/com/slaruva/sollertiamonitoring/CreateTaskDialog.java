@@ -8,9 +8,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
-/**
- * Created by enterix on 11/26/2015.
- */
+import com.slaruva.sollertiamonitoring.ping.CreatePingActivity;
+import com.slaruva.sollertiamonitoring.portcheck.CreatePortCheckActivity;
+
 public class CreateTaskDialog extends DialogFragment {
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -23,6 +23,9 @@ public class CreateTaskDialog extends DialogFragment {
                         switch (which) {
                             case 0:
                                 i = new Intent(context, CreatePortCheckActivity.class);
+                                break;
+                            case 1:
+                                i = new Intent(context, CreatePingActivity.class);
                                 break;
                             default:
                                 i = new Intent(context, MainActivity.class);

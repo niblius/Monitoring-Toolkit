@@ -31,10 +31,16 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".CreatePortCheckActivity" >
+        <activity android:name=".ping.CreatePingActivity" >
         </activity>
 
-        <activity android:name=".PortCheckActivity">
+        <activity android:name=".ping.PingActivity">
+        </activity>
+
+        <activity android:name=".portcheck.CreatePortCheckActivity" >
+        </activity>
+
+        <activity android:name=".portcheck.PortCheckActivity">
         </activity>
 
         <service android:name=".TaskManagerService" >
@@ -45,7 +51,7 @@
             android:value="sollertia.db" />
         <meta-data
             android:name="VERSION"
-            android:value="2" />
+            android:value="3" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />

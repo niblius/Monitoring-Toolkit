@@ -9,9 +9,11 @@ import android.util.Log;
  * Class that sets up AlarmManager on device boot
  */
 public class InitializingBootReceiver extends BroadcastReceiver {
+    private static final String TAG = "InitializingBootReceive";
+
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("Sollertia", "On boot received...");
+        Log.i(TAG, "On boot received...");
         if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
             TaskManagerService.setAlarm(context);
         }

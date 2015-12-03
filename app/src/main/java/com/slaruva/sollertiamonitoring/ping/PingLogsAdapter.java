@@ -1,4 +1,4 @@
-package com.slaruva.sollertiamonitoring;
+package com.slaruva.sollertiamonitoring.ping;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -7,17 +7,16 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import com.slaruva.sollertiamonitoring.R;
+
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-/**
- * Created by enterix on 11/14/2015.
- */
-public class PortCheckLogsAdapter extends ArrayAdapter<PortCheckLog> {
-    List<PortCheckLog> logs;
+public class PingLogsAdapter extends ArrayAdapter<PingLog> {
+    List<PingLog> logs;
     int layoutResourceId;
-    PortCheckLogsAdapter(Context context, int layoutResourceId, List<PortCheckLog> logs) {
+    PingLogsAdapter(Context context, int layoutResourceId, List<PingLog> logs) {
         super(context, layoutResourceId, logs);
         this.logs = logs;
         this.layoutResourceId = layoutResourceId;
@@ -33,7 +32,7 @@ public class PortCheckLogsAdapter extends ArrayAdapter<PortCheckLog> {
             convertView = inflater.inflate(layoutResourceId, null);
         }
 
-        PortCheckLog log = logs.get(position);
+        PingLog log = logs.get(position);
 
         TextView logBody = (TextView)convertView.findViewById(R.id.log_body);
         logBody.setText(log.getResponse());

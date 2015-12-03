@@ -1,10 +1,12 @@
-package com.slaruva.sollertiamonitoring;
+package com.slaruva.sollertiamonitoring.portcheck;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import com.slaruva.sollertiamonitoring.R;
 
 
 //TODO different activities for different tasks
@@ -18,7 +20,7 @@ public class CreatePortCheckActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create_task);
+        setContentView(R.layout.activity_create_port_check);
     }
 
     /**
@@ -33,7 +35,7 @@ public class CreatePortCheckActivity extends AppCompatActivity {
         try {
             port = Integer.parseInt(portField.getText().toString());
         } catch (NumberFormatException e) {
-            errorView.setText(getString(R.string.invalid_port).toString());
+            errorView.setText(getString(R.string.invalid_port));
             return;
         }
 
@@ -43,11 +45,11 @@ public class CreatePortCheckActivity extends AppCompatActivity {
         PortCheck task = new PortCheck();
 
         if(!task.setPort(port)) {
-            errorView.setText(getString(R.string.invalid_port).toString());
+            errorView.setText(getString(R.string.invalid_port));
             return;
         }
         if(!task.setIp(ip)) {
-            errorView.setText(getString(R.string.invalid_ip).toString());
+            errorView.setText(getString(R.string.invalid_ip));
             return;
         }
 

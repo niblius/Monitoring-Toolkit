@@ -14,12 +14,13 @@ import com.orm.SugarContext;
  * sets up alarms first time
  */
 public class Sollertia extends Application {
+    private static final String TAG = "Sollertia";
     private SharedPreferences sharedPref;
 
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.d("Sollertia", "Initialization...");
+        Log.d(TAG, "Initialization...");
         SugarContext.init(this);
         setPreferences();
         doFirstTimeRoutine();

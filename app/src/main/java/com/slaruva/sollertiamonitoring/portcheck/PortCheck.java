@@ -1,15 +1,17 @@
-package com.slaruva.sollertiamonitoring;
+package com.slaruva.sollertiamonitoring.portcheck;
 
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 
 import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
+import com.slaruva.sollertiamonitoring.Helper;
+import com.slaruva.sollertiamonitoring.R;
+import com.slaruva.sollertiamonitoring.Task;
 
 import org.apache.commons.net.telnet.TelnetClient;
 
@@ -89,39 +91,8 @@ public class PortCheck extends SugarRecord implements Task {
         return ip;
     }
 
-    private boolean isValidIP(String ip) {
-        try {
-            if (ip == null || ip.isEmpty()) {
-                return false;
-            }
-
-            String[] parts = ip.split("\\.");
-            if (parts.length != 4) {
-                return false;
-            }
-
-            for (String s : parts) {
-                int i = Integer.parseInt(s);
-                if ((i < 0) || (i > 255)) {
-                    return false;
-                }
-            }
-            if (ip.endsWith(".")) {
-                return false;
-            }
-
-            return true;
-        } catch (NumberFormatException nfe) {
-            return false;
-        }
-    }
-
-    private boolean isValidUlr(String url) {
-        return Patterns.WEB_URL.matcher(url).matches();
-    }
-
     public boolean setIp(String ip) {
-        if(isValidIP(ip) || isValidUlr(ip)) {
+        if(Helper.isValidIP(ip) || Helper.isValidUlr(ip)) {
             this.ip = ip;
             return true;
         }

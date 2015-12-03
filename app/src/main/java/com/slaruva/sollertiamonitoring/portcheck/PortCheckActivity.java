@@ -1,11 +1,12 @@
-package com.slaruva.sollertiamonitoring;
+package com.slaruva.sollertiamonitoring.portcheck;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
+
+import com.slaruva.sollertiamonitoring.R;
 
 import java.util.List;
 
