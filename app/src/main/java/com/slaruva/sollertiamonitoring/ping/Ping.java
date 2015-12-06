@@ -24,13 +24,12 @@ public class Ping extends SugarRecord implements Task {
 
     @Override
     public void execute(Context context) {
-        String resp;
+        PingLog log;
         try {
-            resp = "" + pingHost(ip);
+            log = ping();
         } catch (Exception e) {
-            resp = e.getMessage();
+            log = new PingLog(e.getMessage(), this);
         }
-        PingLog log = new PingLog(resp, this);
         log.save();
     }
 
@@ -78,34 +77,31 @@ public class Ping extends SugarRecord implements Task {
 
     public Ping() { }
 
-    //stackoveflow code
-
-    public static String pingError = null;
-
+    // modified stackoveflow code
     /**
      * Ping a host and return an int value of 0 or 1 or 2 0=success, 1=fail, 2=error
      *
      * Does not work in Android emulator and also delay by '1' second if host not pingable
      * In the Android emulator only ping to 127.0.0.1 works
-     *
-     * @param host in dotted IP address format, or url
      * @return
      * @throws IOException
      * @throws InterruptedException
      */
-    public static int pingHost(String host) throws IOException, InterruptedException {
+    public int pingHost() throws IOException, InterruptedException {
         Runtime runtime = Runtime.getRuntime();
-        Process proc = runtime.exec("ping -c 1 " + host);
+        Process proc = runtime.exec("ping -c 1 " + this.ip);
         proc.waitFor();
         int exit = proc.exitValue();
         return exit;
     }
 
-    public String ping() throws IOException, InterruptedException {
+    public static final int numberOfPings = 5;
+
+    public PingLog ping() throws IOException, InterruptedException {
         StringBuffer echo = new StringBuffer();
         Runtime runtime = Runtime.getRuntime();
         Log.i(TAG, "About to ping using runtime.exec");
-        Process proc = runtime.exec("ping -c 1 " + ip);
+        Process proc = runtime.exec("ping -c " + numberOfPings + " " + ip);
         proc.waitFor();
         int exit = proc.exitValue();
         if (exit == 0) {
@@ -115,13 +111,9 @@ public class Ping extends SugarRecord implements Task {
             while ((line = buffer.readLine()) != null) {
                 echo.append(line + "\n");
             }
-            return getPingStats(echo.toString());
-        } else if (exit == 1) {
-            pingError = "failed, exit = 1";
-            return null;
+            return getPingLog(echo.toString());
         } else {
-            pingError = "error, exit = 2";
-            return null;
+            return new PingLog("error, exit status > 2", this);
         }
     }
 
@@ -157,25 +149,36 @@ public class Ping extends SugarRecord implements Task {
      *
      * @param s
      */
-    public static String getPingStats(String s) {   //// TODO: 12/1/2015 works completely wrong + change order, 0% after 100%
-        if (s.contains("0% packet loss")) {
+    public PingLog getPingLog(String s) {
+        PingLog log = new PingLog(this);
+        log.setTransmitted(numberOfPings);
+        if (s.contains(" 100% packet loss")) {
+            log.setResponse("100% packet loss");
+            log.setLoss(numberOfPings);
+            log.setLoss(100);
+        } else if (s.contains("% packet loss")) {
             int start = s.indexOf("/mdev = ");
             int end = s.indexOf(" ms\n", start);
-            s = s.substring(start + 8, end);
-            String stats[] = s.split("/");
-            return stats[2];
-        } else if (s.contains("100% packet loss")) {
-            pingError = "100% packet loss";
-            return null;
-        } else if (s.contains("% packet loss")) {
-            pingError = "partial packet loss";
-            return null;
+            String statStr = s.substring(start + 8, end);
+            String stats[] = statStr.split("/");
+            log.setMin(Double.parseDouble(stats[0]));
+            log.setAvg(Double.parseDouble(stats[1]));
+            log.setMax(Double.parseDouble(stats[2]));
+            log.setMdev(Double.parseDouble(stats[3]));
+
+            start = s.indexOf("received, ");
+            end = s.indexOf("% packet loss");
+            log.setLoss(Integer.parseInt(s.substring(start + 10, end)));
+
+            start = s.indexOf("transmitted, ");
+            end = s.indexOf(" received");
+            log.setReceived(Integer.parseInt(s.substring(start + 13, end)));
         } else if (s.contains("unknown host")) {
-            pingError = "unknown host";
-            return null;
+            log.setResponse("unknown host");
         } else {
-            pingError = "unknown error in getPingStats";
-            return null;
+            log.setResponse("unknown error in getPingStats");
         }
+
+        return log;
     }
 }

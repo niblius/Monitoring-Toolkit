@@ -22,4 +22,10 @@
     <string name="preference_main">com.slaruva.sollertiamonitoring.PREFERENCE_MAIN</string>
     <string name="what_type_of_task">What type of task would you like to create?</string>
     <string name="back">Back</string>
+    <string name="minPing">\"min:\"</string>
+    <string name="maxPing">max:</string>
+    <string name="avgPing">avg:</string>
+    <string name="mdevPing">mdev:</string>
+    <string name="comma_ms">, ms</string>
+    <string name="lossPing">loss:</string>
 </resources>

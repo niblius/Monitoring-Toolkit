@@ -34,10 +34,24 @@ public class PingLogsAdapter extends ArrayAdapter<PingLog> {
 
         PingLog log = logs.get(position);
 
-        TextView logBody = (TextView)convertView.findViewById(R.id.log_body);
-        logBody.setText(log.getResponse());
-        TextView logDate = (TextView)convertView.findViewById(R.id.log_date);
-        logDate.setText(log.getDatetime(StandardFormat));
+        TextView body = (TextView)convertView.findViewById(R.id.log_body);
+        body.setText(log.getResponse());
+        TextView date = (TextView)convertView.findViewById(R.id.log_date);
+        date.setText(log.getDatetime(StandardFormat));
+        TextView min = (TextView)convertView.findViewById(R.id.min);
+        min.setText("" + log.getMin());
+        TextView max = (TextView)convertView.findViewById(R.id.max);
+        max.setText("" + log.getMax());
+        TextView avg = (TextView)convertView.findViewById(R.id.avg);
+        avg.setText("" + log.getAvg());
+        TextView mdev = (TextView)convertView.findViewById(R.id.mdev);
+        mdev.setText("" + log.getMdev());
+        TextView loss = (TextView)convertView.findViewById(R.id.loss);
+        loss.setText("" + log.getLoss());
+        TextView received = (TextView)convertView.findViewById(R.id.received);
+        received.setText("" + log.getReceived());
+        TextView transmitted = (TextView)convertView.findViewById(R.id.transmitted);
+        transmitted.setText("" + log.getTransmitted());
 
         return convertView;
     }
