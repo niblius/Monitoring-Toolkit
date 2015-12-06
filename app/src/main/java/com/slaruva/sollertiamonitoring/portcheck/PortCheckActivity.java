@@ -49,6 +49,7 @@ public class PortCheckActivity extends AppCompatActivity {
     }
 
     public void delete(View v) {
+        PortCheck.deleteAll(PortCheck.class, "task_parent = ?", "" +pc.getId());
         pc.delete();
         this.finish();
     }

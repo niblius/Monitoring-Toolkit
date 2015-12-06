@@ -13,6 +13,11 @@ import com.orm.SugarContext;
  * greetings dialog
  * sets up alarms first time
  */
+//TODO settings
+//TODO color fail/success
+//TODO notifications
+//TODO filter
+//TODO paging
 public class Sollertia extends Application {
     private static final String TAG = "Sollertia";
     private SharedPreferences sharedPref;

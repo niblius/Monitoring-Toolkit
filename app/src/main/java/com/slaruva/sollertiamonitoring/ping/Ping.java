@@ -14,9 +14,12 @@ import com.slaruva.sollertiamonitoring.Task;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.InvalidParameterException;
 
+
+//TODO add specific options (all ping flags)
 public class Ping extends SugarRecord implements Task {
     //todo add ping time, %loss and so on
     private String ip;
@@ -103,18 +106,23 @@ public class Ping extends SugarRecord implements Task {
         Log.i(TAG, "About to ping using runtime.exec");
         Process proc = runtime.exec("ping -c " + numberOfPings + " " + ip);
         proc.waitFor();
-        int exit = proc.exitValue();
-        if (exit == 0) {
-            InputStreamReader reader = new InputStreamReader(proc.getInputStream());
-            BufferedReader buffer = new BufferedReader(reader);
-            String line = "";
-            while ((line = buffer.readLine()) != null) {
-                echo.append(line + "\n");
-            }
-            return getPingLog(echo.toString());
-        } else {
-            return new PingLog("error, exit status > 2", this);
+        // "unknown host" messsage goes to stderr
+        StringBuilder b = buffStream(proc.getInputStream());
+        b.append(buffStream(proc.getErrorStream()));
+
+        return getPingLog(b.toString());
+    }
+
+    private StringBuilder buffStream(InputStream is) throws IOException {
+        InputStreamReader r = new InputStreamReader(is);
+        BufferedReader b = new BufferedReader(r);
+        String line;
+        StringBuilder echo = new StringBuilder();
+        while ((line = b.readLine()) != null) {
+            echo.append(line + "\n");
+            Log.d(TAG, line);
         }
+        return echo;
     }
 
     /**
@@ -153,6 +161,7 @@ public class Ping extends SugarRecord implements Task {
         PingLog log = new PingLog(this);
         log.setTransmitted(numberOfPings);
         if (s.contains(" 100% packet loss")) {
+            log.setResponse("Fail");
             log.setResponse("100% packet loss");
             log.setLoss(numberOfPings);
             log.setLoss(100);
@@ -168,7 +177,13 @@ public class Ping extends SugarRecord implements Task {
 
             start = s.indexOf("received, ");
             end = s.indexOf("% packet loss");
-            log.setLoss(Integer.parseInt(s.substring(start + 10, end)));
+            int loss = Integer.parseInt(s.substring(start + 10, end));
+            log.setLoss(loss);
+            if(loss == 0) {
+                log.setResponse("Success");
+            } else  {
+                log.setResponse("Partial packet loss");
+            }
 
             start = s.indexOf("transmitted, ");
             end = s.indexOf(" received");
@@ -176,7 +191,7 @@ public class Ping extends SugarRecord implements Task {
         } else if (s.contains("unknown host")) {
             log.setResponse("unknown host");
         } else {
-            log.setResponse("unknown error in getPingStats");
+            log.setResponse("Error");
         }
 
         return log;

@@ -12,6 +12,7 @@ import java.util.List;
 
 public class PingActivity extends AppCompatActivity {
     private Ping pinger;
+    List<PingLog> logs;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +25,6 @@ public class PingActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        List<PingLog> logs;
         PingLogsAdapter adapter;
         long pcId = getIntent().getExtras().getLong(Ping.PING_ID);
         pinger = Ping.findById(Ping.class, pcId);
@@ -45,6 +45,7 @@ public class PingActivity extends AppCompatActivity {
     }
 
     public void delete(View v) {
+        PingLog.deleteAll(PingLog.class, "task_parent = ?", ""+pinger.getId());
         pinger.delete();
         this.finish();
     }
