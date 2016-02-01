@@ -11,20 +11,19 @@ public class PingLog extends SugarRecord {
     private double min = 0d, avg = 0d, max = 0d, mdev = 0d;
     private int received = 0, transmitted = 0;
     private int loss = 0;
+    private int succeeded = 0;
 
-    public static final byte SUCCESS = 0;
-    public static final byte FAIL = 1;
-    public static final byte PARTIAL_SUCCESS = 2;
+    public static final int SUCCESS = 3;
+    public static final int FAIL = 1;
+    public static final int PARTIAL_SUCCESS = 2;
 
-    public byte isSucceeded() {
+    public int isSucceeded() {
         return succeeded;
     }
 
-    public void setSucceeded(byte succeeded) {
+    public void setSucceeded(int succeeded) {
         this.succeeded = succeeded;
     }
-
-    private byte succeeded = 0;
 
     private long datetime;
 
@@ -106,7 +105,7 @@ public class PingLog extends SugarRecord {
         this.mdev = mdev;
     }
 
-    public PingLog(String response, Ping task, byte succeeded) {
+    public PingLog(String response, Ping task, int succeeded) {
         this.succeeded = succeeded;
         this.response = response;
         this.taskParent = task;

@@ -11,7 +11,7 @@ import com.slaruva.sollertiamonitoring.R;
 import java.util.List;
 
 public class PortCheckActivity extends AppCompatActivity {
-    public static byte MAXIMUM_SHOWED = 24;
+    public static int MAXIMUM_SHOWED = 24;
     private PortCheck pc;
 
     @Override

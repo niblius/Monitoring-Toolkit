@@ -11,7 +11,7 @@ import com.slaruva.sollertiamonitoring.R;
 import java.util.List;
 
 public class PingActivity extends AppCompatActivity {
-    public static byte MAXIMUM_SHOWED = 24;
+    public static int MAXIMUM_SHOWED = 24;
 
     private Ping pinger;
     List<PingLog> logs;

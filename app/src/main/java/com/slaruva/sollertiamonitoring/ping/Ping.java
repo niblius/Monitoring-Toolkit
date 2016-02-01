@@ -148,7 +148,7 @@ public class Ping extends SugarRecord implements Task {
      *
      * http://en.wikipedia.org/wiki/Ping
      *
-     * PING 127.0.0.1 (127.0.0.1) 56(84) bytes of data.
+     * PING 127.0.0.1 (127.0.0.1) 56(84) ints of data.
      * 64 bytes from 127.0.0.1: icmp_seq=1 ttl=64 time=0.251 ms
      * 64 bytes from 127.0.0.1: icmp_seq=2 ttl=64 time=0.294 ms
      * 64 bytes from 127.0.0.1: icmp_seq=3 ttl=64 time=0.295 ms
@@ -178,9 +178,7 @@ public class Ping extends SugarRecord implements Task {
         PingLog log = new PingLog(this);
         log.setTransmitted(numberOfPings);
         if (s.contains(" 100% packet loss")) {
-            log.setResponse("Fail");
             log.setResponse("100% packet loss");
-            log.setLoss(numberOfPings);
             log.setLoss(100);
             log.setSucceeded(PingLog.FAIL);
         } else if (s.contains("% packet loss")) {
