@@ -3,8 +3,10 @@ package com.slaruva.sollertiamonitoring.portcheck;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.orm.SugarRecord;
@@ -19,7 +21,7 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.security.InvalidParameterException;
-
+import java.util.List;
 
 /**
  * PortCheck is a task that pings specific port of given server and logs response.
@@ -38,8 +40,7 @@ public class PortCheck extends SugarRecord implements Task {
 
     @Override
     public void execute(Context context) {
-        String resp = getPortResponse(context);
-        PortCheckLog log = new PortCheckLog(resp, this);
+        PortCheckLog log = getPortResponse(context);
         log.save();
     }
 
@@ -48,23 +49,26 @@ public class PortCheck extends SugarRecord implements Task {
      * @param context current context
      * @return Resource strings that correspond to: success, error, fail or unknown_host
      */
-    private String getPortResponse(Context context) {
+    private PortCheckLog getPortResponse(Context context) {
         try {
             client.get().connect(ip, port);
             client.get().disconnect();
         } catch (ConnectException ce) {
-            return context.getString(R.string.fail);
+            return new PortCheckLog(context.getString(R.string.fail),
+                    this, false);
         } catch (UnknownHostException e) {
-            return context.getString(R.string.unknown_host);
+            return new PortCheckLog(context.getString(R.string.unknown_host),
+                    this, false);
         } catch (IOException e) {
-            return context.getString(R.string.error);
+            return new PortCheckLog(context.getString(R.string.error),
+                    this, false);
         }
-        return context.getString(R.string.success);
+        return new PortCheckLog(context.getString(R.string.success),
+                this, true);
     }
 
     @Override
     public View getRowView(Context context, View rowView) {
-        //TODO colors depending on logs
         if(rowView == null) {
             LayoutInflater inflater = (LayoutInflater)
                     context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -74,7 +78,19 @@ public class PortCheck extends SugarRecord implements Task {
         TextView ipView = (TextView)rowView.findViewById(R.id.ip);
         ipView.setText(ip);
         TextView portView = (TextView)rowView.findViewById(R.id.port);
-        portView.setText(""+port);
+        portView.setText("" + port);
+
+        List logs = PortCheckLog.find(PortCheckLog.class, "task_parent = ?",
+                new String[]{this.getId().toString()},
+                null, "id DESC", "1");
+        if(!logs.isEmpty()) {
+            PortCheckLog lastLog = (PortCheckLog)logs.get(0);
+            RelativeLayout element = (RelativeLayout) rowView.findViewById(R.id.element);
+            if (lastLog.isSucceeded())
+                element.setBackgroundColor(Color.GREEN);
+            else
+                element.setBackgroundColor(Color.RED);
+        }
 
         return rowView;
     }

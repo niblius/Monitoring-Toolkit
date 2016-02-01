@@ -1,10 +1,12 @@
 package com.slaruva.sollertiamonitoring.portcheck;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.slaruva.sollertiamonitoring.R;
@@ -38,6 +40,12 @@ public class PortCheckLogsAdapter extends ArrayAdapter<PortCheckLog> {
         logBody.setText(log.getResponse());
         TextView logDate = (TextView)convertView.findViewById(R.id.log_date);
         logDate.setText(log.getDatetime(StandardFormat));
+
+        LinearLayout element = (LinearLayout)convertView.findViewById(R.id.element);
+        if(log.isSucceeded())
+            element.setBackgroundColor(Color.GREEN);
+        else
+            element.setBackgroundColor(Color.RED);
 
         return convertView;
     }

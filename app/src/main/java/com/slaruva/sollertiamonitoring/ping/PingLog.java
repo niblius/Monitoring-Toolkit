@@ -12,6 +12,20 @@ public class PingLog extends SugarRecord {
     private int received = 0, transmitted = 0;
     private int loss = 0;
 
+    public static final byte SUCCESS = 0;
+    public static final byte FAIL = 1;
+    public static final byte PARTIAL_SUCCESS = 2;
+
+    public byte isSucceeded() {
+        return succeeded;
+    }
+
+    public void setSucceeded(byte succeeded) {
+        this.succeeded = succeeded;
+    }
+
+    private byte succeeded = 0;
+
     private long datetime;
 
     public Ping getTaskParent() {
@@ -60,8 +74,6 @@ public class PingLog extends SugarRecord {
         return formatter.format(calendar.getTime());
     }
 
-    public PingLog() { }
-
     public double getMin() {
         return min;
     }
@@ -94,7 +106,8 @@ public class PingLog extends SugarRecord {
         this.mdev = mdev;
     }
 
-    public PingLog(String response, Ping task) {
+    public PingLog(String response, Ping task, byte succeeded) {
+        this.succeeded = succeeded;
         this.response = response;
         this.taskParent = task;
         datetime = Calendar.getInstance().getTimeInMillis();
@@ -104,4 +117,6 @@ public class PingLog extends SugarRecord {
         this.taskParent = task;
         datetime = Calendar.getInstance().getTimeInMillis();
     }
+
+    public PingLog() { }
 }

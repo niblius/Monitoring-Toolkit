@@ -1,10 +1,12 @@
 package com.slaruva.sollertiamonitoring.ping;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.slaruva.sollertiamonitoring.R;
@@ -52,6 +54,14 @@ public class PingLogsAdapter extends ArrayAdapter<PingLog> {
         received.setText("" + log.getReceived());
         TextView transmitted = (TextView)convertView.findViewById(R.id.transmitted);
         transmitted.setText("" + log.getTransmitted());
+
+        LinearLayout element = (LinearLayout)convertView.findViewById(R.id.element);
+        if(log.isSucceeded() == PingLog.SUCCESS)
+            element.setBackgroundColor(Color.GREEN);
+        else if(log.isSucceeded() == PingLog.FAIL)
+            element.setBackgroundColor(Color.RED);
+        else if(log.isSucceeded() == PingLog.PARTIAL_SUCCESS)
+            element.setBackgroundColor(Color.YELLOW);
 
         return convertView;
     }

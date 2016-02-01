@@ -11,6 +11,8 @@ import com.slaruva.sollertiamonitoring.R;
 import java.util.List;
 
 public class PingActivity extends AppCompatActivity {
+    public static byte MAXIMUM_SHOWED = 24;
+
     private Ping pinger;
     List<PingLog> logs;
 
@@ -20,7 +22,6 @@ public class PingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_ping);
     }
 
-    //TODO onClick mark viewed + colors
     @Override
     protected void onResume() {
         super.onResume();
@@ -33,7 +34,9 @@ public class PingActivity extends AppCompatActivity {
         ip.setText(pinger.getIp());
 
         ListView logList = (ListView)findViewById(R.id.log_list);
-        logs = PingLog.find(PingLog.class, "task_parent = ?", ""+pcId);
+        logs = PingLog.find(PingLog.class, "task_parent = ?",
+                new String[]{""+pcId},
+                null, "id DESC", ""+MAXIMUM_SHOWED);
         adapter = new PingLogsAdapter(this, R.layout.row_ping_log, logs);
         logList.setAdapter(adapter);
     }

@@ -10,12 +10,21 @@ import java.util.Calendar;
  * id of parent task;
  * response of the server;
  * time of its creation in milliseconds
- */
+*/
 
 public class PortCheckLog extends SugarRecord {
     private PortCheck taskParent;
     private String response;
+    private boolean succeeded;
     private long datetime;
+
+    public boolean isSucceeded() {
+        return succeeded;
+    }
+
+    public void setSucceeded(boolean successed) {
+        this.succeeded = successed;
+    }
 
     public PortCheck getTaskParent() {
         return taskParent;
@@ -42,7 +51,8 @@ public class PortCheckLog extends SugarRecord {
 
     public PortCheckLog() { }
 
-    public PortCheckLog(String response, PortCheck task) {
+    public PortCheckLog(String response, PortCheck task, boolean succeeded) {
+        this.succeeded = succeeded;
         this.response = response;
         this.taskParent = task;
         datetime = Calendar.getInstance().getTimeInMillis();    //TODO i'm not sure about zones...

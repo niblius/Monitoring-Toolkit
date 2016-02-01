@@ -14,7 +14,6 @@ import com.orm.SugarContext;
  * sets up alarms first time
  */
 //TODO settings
-//TODO color fail/success
 //TODO notifications
 //TODO filter
 //TODO paging

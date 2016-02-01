@@ -2,9 +2,11 @@ package com.slaruva.sollertiamonitoring.ping;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.orm.SugarRecord;
@@ -17,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.InvalidParameterException;
+import java.util.List;
 
 
 //TODO add specific options (all ping flags)
@@ -31,14 +34,13 @@ public class Ping extends SugarRecord implements Task {
         try {
             log = ping();
         } catch (Exception e) {
-            log = new PingLog(e.getMessage(), this);
+            log = new PingLog(e.getMessage(), this, PingLog.FAIL);
         }
         log.save();
     }
 
     @Override
     public View getRowView(Context context, View rowView) {
-        //TODO colors depending on logs
         if(rowView == null) {
             LayoutInflater inflater = (LayoutInflater)
                     context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -47,6 +49,20 @@ public class Ping extends SugarRecord implements Task {
 
         TextView ipView = (TextView)rowView.findViewById(R.id.ip);
         ipView.setText(ip);
+
+        List logs = PingLog.find(PingLog.class, "task_parent = ?",
+                new String[]{this.getId().toString()},
+                null, "id DESC", "1");
+        if(!logs.isEmpty()) {
+            PingLog lastLog = (PingLog)logs.get(0);
+            RelativeLayout element = (RelativeLayout) rowView.findViewById(R.id.element);
+            if (lastLog.isSucceeded() == PingLog.SUCCESS)
+                element.setBackgroundColor(Color.GREEN);
+            else if (lastLog.isSucceeded() == PingLog.FAIL)
+                element.setBackgroundColor(Color.RED);
+            else if (lastLog.isSucceeded() == PingLog.PARTIAL_SUCCESS)
+                element.setBackgroundColor(Color.YELLOW);
+        }
 
         return rowView;
     }
@@ -158,6 +174,7 @@ public class Ping extends SugarRecord implements Task {
      * @param s
      */
     public PingLog getPingLog(String s) {
+        //  TODO strings/localization
         PingLog log = new PingLog(this);
         log.setTransmitted(numberOfPings);
         if (s.contains(" 100% packet loss")) {
@@ -165,6 +182,7 @@ public class Ping extends SugarRecord implements Task {
             log.setResponse("100% packet loss");
             log.setLoss(numberOfPings);
             log.setLoss(100);
+            log.setSucceeded(PingLog.FAIL);
         } else if (s.contains("% packet loss")) {
             int start = s.indexOf("/mdev = ");
             int end = s.indexOf(" ms\n", start);
@@ -181,8 +199,10 @@ public class Ping extends SugarRecord implements Task {
             log.setLoss(loss);
             if(loss == 0) {
                 log.setResponse("Success");
+                log.setSucceeded(PingLog.SUCCESS);
             } else  {
                 log.setResponse("Partial packet loss");
+                log.setSucceeded(PingLog.PARTIAL_SUCCESS);
             }
 
             start = s.indexOf("transmitted, ");
@@ -190,10 +210,11 @@ public class Ping extends SugarRecord implements Task {
             log.setReceived(Integer.parseInt(s.substring(start + 13, end)));
         } else if (s.contains("unknown host")) {
             log.setResponse("unknown host");
+            log.setSucceeded(PingLog.FAIL);
         } else {
             log.setResponse("Error");
+            log.setSucceeded(PingLog.FAIL);
         }
-
         return log;
     }
 }

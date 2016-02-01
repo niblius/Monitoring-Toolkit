@@ -11,6 +11,7 @@ import com.slaruva.sollertiamonitoring.R;
 import java.util.List;
 
 public class PortCheckActivity extends AppCompatActivity {
+    public static byte MAXIMUM_SHOWED = 24;
     private PortCheck pc;
 
     @Override
@@ -19,7 +20,6 @@ public class PortCheckActivity extends AppCompatActivity {
         setContentView(R.layout.activity_port_check);
     }
 
-    //TODO onClick mark viewed + colors
     @Override
     protected void onResume() {
         super.onResume();
@@ -35,7 +35,9 @@ public class PortCheckActivity extends AppCompatActivity {
         port.setText("" + pc.getPort());
 
         ListView logList = (ListView)findViewById(R.id.log_list);
-        logs = PortCheckLog.find(PortCheckLog.class, "task_parent = ?", ""+pcId);
+        logs = PortCheckLog.find(PortCheckLog.class, "task_parent = ?",
+                new String[]{""+pcId},
+                null, "id DESC", ""+MAXIMUM_SHOWED);
         adapter = new PortCheckLogsAdapter(this, R.layout.row_port_check_log, logs);
         logList.setAdapter(adapter);
     }
