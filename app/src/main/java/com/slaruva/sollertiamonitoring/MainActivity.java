@@ -15,19 +15,16 @@ import java.util.List;
  * all current tasks
  */
 public class MainActivity extends AppCompatActivity {
+    List<Task> tasks;
+    TasksAdapter adapter;
+    ListView taskList;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        List<Task> tasks;
-        TasksAdapter adapter;
-        ListView taskList = (ListView)findViewById(R.id.task_list);
+        taskList = (ListView)findViewById(R.id.task_list);
         tasks = TaskManagerService.getAllTasks();
         adapter = new TasksAdapter(tasks);
         taskList.setAdapter(adapter);
@@ -41,11 +38,19 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        tasks.clear();
+        tasks.addAll(TaskManagerService.getAllTasks());
+        adapter.notifyDataSetChanged();
+    }
+
     private final static String DIALOG_TAG = "CREATE_NEW_TASK_DIALOG";
     /**
      * OnClick method for button "Create new task", moves us to CreatePortCheckActivity
      * in future will display dialog with dropdown list of available task types.
-     * @param view
      */
     public void gotoCreateTaskActivity(View view) {
         DialogFragment df = new CreateTaskDialog();

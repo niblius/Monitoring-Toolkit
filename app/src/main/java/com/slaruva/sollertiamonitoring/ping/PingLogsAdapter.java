@@ -14,7 +14,7 @@ import com.slaruva.sollertiamonitoring.R;
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
-
+// TODO If no logs "logs will be here"
 public class PingLogsAdapter extends ArrayAdapter<PingLog> {
     List<PingLog> logs;
     int layoutResourceId;

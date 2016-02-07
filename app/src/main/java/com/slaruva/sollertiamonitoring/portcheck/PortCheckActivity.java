@@ -3,6 +3,7 @@ package com.slaruva.sollertiamonitoring.portcheck;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ListView;
 
@@ -10,23 +11,21 @@ import com.slaruva.sollertiamonitoring.R;
 
 import java.util.List;
 
-public class PortCheckActivity extends AppCompatActivity {
-    public static int MAXIMUM_SHOWED = 24;
-    private PortCheck pc;
+// TODO ping + portcheck are very similar, copy/paste code fix it!!!
+
+public class PortCheckActivity extends AppCompatActivity implements AbsListView.OnScrollListener {
+    public static int PAGE_SIZE = 64;
+    PortCheck pc;
+    List<PortCheckLog> logs;
+    PortCheckLogsAdapter adapter;
+    long pcId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_port_check);
-    }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        List<PortCheckLog> logs;
-        PortCheckLogsAdapter adapter;
-        long pcId = getIntent().getExtras().getLong(PortCheck.PORT_CHECK_ID);
+        pcId = getIntent().getExtras().getLong(PortCheck.PORT_CHECK_ID);
         pc = PortCheck.findById(PortCheck.class, pcId);
 
         EditText ip = (EditText)findViewById(R.id.ip);
@@ -37,9 +36,22 @@ public class PortCheckActivity extends AppCompatActivity {
         ListView logList = (ListView)findViewById(R.id.log_list);
         logs = PortCheckLog.find(PortCheckLog.class, "task_parent = ?",
                 new String[]{""+pcId},
-                null, "id DESC", ""+MAXIMUM_SHOWED);
+                null, "id DESC", ""+PAGE_SIZE);
         adapter = new PortCheckLogsAdapter(this, R.layout.row_port_check_log, logs);
         logList.setAdapter(adapter);
+        logList.setOnScrollListener(this);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        List<PortCheckLog> newLogs = PortCheckLog.find(PortCheckLog.class, "task_parent = ?",
+                new String[]{"" + pcId},
+                null, "id DESC", "" + logs.size());
+        logs.clear();
+        logs.addAll(newLogs);
+        adapter.notifyDataSetChanged();
     }
 
     public void save(View v) {
@@ -54,5 +66,28 @@ public class PortCheckActivity extends AppCompatActivity {
         PortCheck.deleteAll(PortCheck.class, "task_parent = ?", "" +pc.getId());
         pc.delete();
         this.finish();
+    }
+
+    @Override
+    public void onScrollStateChanged(AbsListView view, int scrollState) { }
+
+    int lastItemNumb = 0;
+    int preLastItemNumb = 0;
+    @Override
+    public void onScroll(AbsListView view, int firstVisibleItem,
+                         int visibleItemCount, int totalItemCount) {
+        lastItemNumb = firstVisibleItem + visibleItemCount;
+        if(preLastItemNumb != lastItemNumb && lastItemNumb == totalItemCount) {
+            preLastItemNumb = lastItemNumb;
+            //  Unfortunately Sugar ORM doesn't have OFFSET in
+            //  query builder
+            List<PortCheckLog> newLogs = PortCheckLog.findWithQuery(PortCheckLog.class,
+                    "SELECT * FROM port_check_log WHERE task_parent = ? " +
+                    "ORDER BY id DESC LIMIT ? " +
+                    "OFFSET ?",
+                    ""+pcId, ""+PAGE_SIZE, ""+logs.size());
+            logs.addAll(newLogs);
+            adapter.notifyDataSetChanged();
+        }
     }
 }

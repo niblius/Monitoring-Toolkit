@@ -16,7 +16,6 @@ import com.orm.SugarContext;
 //TODO settings
 //TODO notifications
 //TODO filter
-//TODO paging
 public class Sollertia extends Application {
     private static final String TAG = "Sollertia";
     private SharedPreferences sharedPref;
