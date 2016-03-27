@@ -9,7 +9,6 @@ import android.widget.TextView;
 import com.slaruva.sollertiamonitoring.R;
 
 
-//TODO different activities for different tasks
 //TODO validation
 
 /**

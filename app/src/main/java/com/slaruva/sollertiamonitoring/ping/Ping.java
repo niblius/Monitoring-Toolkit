@@ -41,28 +41,38 @@ public class Ping extends SugarRecord implements Task {
 
     @Override
     public View getRowView(Context context, View rowView) {
+        PingViewHolder holder;
         if(rowView == null) {
             LayoutInflater inflater = (LayoutInflater)
                     context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             rowView = inflater.inflate(R.layout.row_ping, null);
+
+            holder = new PingViewHolder();
+            holder.ipView = (TextView)rowView.findViewById(R.id.ip);
+            holder.element = (RelativeLayout) rowView.findViewById(R.id.element);
+            rowView.setTag(holder);
+        } else {
+            holder = (PingViewHolder) rowView.getTag();
         }
 
-        TextView ipView = (TextView)rowView.findViewById(R.id.ip);
-        ipView.setText(ip);
+        holder.ipView.setText(ip);
 
         List logs = PingLog.find(PingLog.class, "task_parent = ?",
                 new String[]{this.getId().toString()},
                 null, "id DESC", "1");
-        if(!logs.isEmpty()) {
-            PingLog lastLog = (PingLog)logs.get(0);
-            RelativeLayout element = (RelativeLayout) rowView.findViewById(R.id.element);
-            if (lastLog.isSucceeded() == PingLog.SUCCESS)
-                element.setBackgroundColor(Color.GREEN);
-            else if (lastLog.isSucceeded() == PingLog.FAIL)
-                element.setBackgroundColor(Color.RED);
-            else if (lastLog.isSucceeded() == PingLog.PARTIAL_SUCCESS)
-                element.setBackgroundColor(Color.YELLOW);
-        }
+
+        PingLog lastLog = null;
+        if(!logs.isEmpty())
+            lastLog = (PingLog)logs.get(0);
+
+        if(lastLog == null)
+            holder.element.setBackgroundColor(Color.WHITE);
+        else if (lastLog.getShortResult() == PingLog.SUCCESS)
+            holder.element.setBackgroundColor(Color.GREEN);
+        else if (lastLog.getShortResult() == PingLog.FAIL)
+            holder.element.setBackgroundColor(Color.RED);
+        else if (lastLog.getShortResult() == PingLog.PARTIAL_SUCCESS)
+            holder.element.setBackgroundColor(Color.YELLOW);
 
         return rowView;
     }
@@ -110,8 +120,7 @@ public class Ping extends SugarRecord implements Task {
         Runtime runtime = Runtime.getRuntime();
         Process proc = runtime.exec("ping -c 1 " + this.ip);
         proc.waitFor();
-        int exit = proc.exitValue();
-        return exit;
+        return proc.exitValue();
     }
 
     public static final int numberOfPings = 5;
@@ -215,4 +224,9 @@ public class Ping extends SugarRecord implements Task {
         }
         return log;
     }
+}
+
+class PingViewHolder {
+    TextView ipView;
+    RelativeLayout element;
 }

@@ -16,11 +16,10 @@ import java.util.List;
 import java.util.Locale;
 // TODO If no logs "logs will be here"
 public class PingLogsAdapter extends ArrayAdapter<PingLog> {
-    List<PingLog> logs;
-    int layoutResourceId;
+    private int layoutResourceId;
+
     PingLogsAdapter(Context context, int layoutResourceId, List<PingLog> logs) {
         super(context, layoutResourceId, logs);
-        this.logs = logs;
         this.layoutResourceId = layoutResourceId;
     }
 
@@ -34,7 +33,7 @@ public class PingLogsAdapter extends ArrayAdapter<PingLog> {
             convertView = inflater.inflate(layoutResourceId, null);
         }
 
-        PingLog log = logs.get(position);
+        PingLog log = getItem(position);
 
         TextView body = (TextView)convertView.findViewById(R.id.log_body);
         body.setText(log.getResponse());
@@ -56,11 +55,11 @@ public class PingLogsAdapter extends ArrayAdapter<PingLog> {
         transmitted.setText("" + log.getTransmitted());
 
         LinearLayout element = (LinearLayout)convertView.findViewById(R.id.element);
-        if(log.isSucceeded() == PingLog.SUCCESS)
+        if(log.getShortResult() == PingLog.SUCCESS)
             element.setBackgroundColor(Color.GREEN);
-        else if(log.isSucceeded() == PingLog.FAIL)
+        else if(log.getShortResult() == PingLog.FAIL)
             element.setBackgroundColor(Color.RED);
-        else if(log.isSucceeded() == PingLog.PARTIAL_SUCCESS)
+        else if(log.getShortResult() == PingLog.PARTIAL_SUCCESS)
             element.setBackgroundColor(Color.YELLOW);
 
         return convertView;

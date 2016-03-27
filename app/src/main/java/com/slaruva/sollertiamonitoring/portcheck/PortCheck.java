@@ -55,42 +55,52 @@ public class PortCheck extends SugarRecord implements Task {
             client.get().disconnect();
         } catch (ConnectException ce) {
             return new PortCheckLog(context.getString(R.string.fail),
-                    this, false);
+                    this, PortCheckLog.FAIL);
         } catch (UnknownHostException e) {
             return new PortCheckLog(context.getString(R.string.unknown_host),
-                    this, false);
+                    this, PortCheckLog.FAIL);
         } catch (IOException e) {
             return new PortCheckLog(context.getString(R.string.error),
-                    this, false);
+                    this, PortCheckLog.FAIL);
         }
         return new PortCheckLog(context.getString(R.string.success),
-                this, true);
+                this, PortCheckLog.SUCCESS);
     }
 
     @Override
     public View getRowView(Context context, View rowView) {
+        PortCheckViewHolder holder;
         if(rowView == null) {
             LayoutInflater inflater = (LayoutInflater)
                     context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             rowView = inflater.inflate(R.layout.row_port_check, null);
+
+            holder = new PortCheckViewHolder();
+            holder.ipView = (TextView)rowView.findViewById(R.id.ip);
+            holder.portView = (TextView)rowView.findViewById(R.id.port);
+            holder.element = (RelativeLayout) rowView.findViewById(R.id.element);
+            rowView.setTag(holder);
+        } else {
+            holder = (PortCheckViewHolder)rowView.getTag();
         }
 
-        TextView ipView = (TextView)rowView.findViewById(R.id.ip);
-        ipView.setText(ip);
-        TextView portView = (TextView)rowView.findViewById(R.id.port);
-        portView.setText("" + port);
-
+        holder.ipView.setText(ip);
+        holder.portView.setText("" + port);
         List logs = PortCheckLog.find(PortCheckLog.class, "task_parent = ?",
                 new String[]{this.getId().toString()},
                 null, "id DESC", "1");
-        if(!logs.isEmpty()) {
-            PortCheckLog lastLog = (PortCheckLog)logs.get(0);
-            RelativeLayout element = (RelativeLayout) rowView.findViewById(R.id.element);
-            if (lastLog.isSucceeded())
-                element.setBackgroundColor(Color.GREEN);
-            else
-                element.setBackgroundColor(Color.RED);
-        }
+
+        PortCheckLog lastLog = null;
+        if(!logs.isEmpty())
+            lastLog = (PortCheckLog)logs.get(0);
+
+        if(lastLog == null)
+            holder.element.setBackgroundColor(Color.WHITE);
+        else if (lastLog.getShortResult() == PortCheckLog.SUCCESS)
+            holder.element.setBackgroundColor(Color.GREEN);
+        else if (lastLog.getShortResult() == PortCheckLog.FAIL)
+            holder.element.setBackgroundColor(Color.RED);
+
 
         return rowView;
     }
@@ -144,4 +154,10 @@ public class PortCheck extends SugarRecord implements Task {
     }
 
     public PortCheck() { }
+}
+
+class PortCheckViewHolder {
+    TextView ipView;
+    TextView portView;
+    RelativeLayout element;
 }

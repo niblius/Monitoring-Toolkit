@@ -9,13 +9,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.List;
+import java.util.Vector;
 
 /**
  * Main activity of the app, currently responses for displaying
  * all current tasks
  */
 public class MainActivity extends AppCompatActivity {
-    List<Task> tasks;
     TasksAdapter adapter;
     ListView taskList;
 
@@ -25,8 +25,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         taskList = (ListView)findViewById(R.id.task_list);
-        tasks = TaskManagerService.getAllTasks();
-        adapter = new TasksAdapter(tasks);
+        List<Task> tasks = new Vector<>();
+        adapter = new TasksAdapter(this, tasks);
         taskList.setAdapter(adapter);
         taskList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -41,20 +41,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-
-        tasks.clear();
-        tasks.addAll(TaskManagerService.getAllTasks());
+        //  TODO    ADD ONLY NEW, same with all others adapters
+        adapter.clear();
+        adapter.addAll(TaskManagerService.getAllTasks());
         adapter.notifyDataSetChanged();
     }
 
     private final static String DIALOG_TAG = "CREATE_NEW_TASK_DIALOG";
-    /**
-     * OnClick method for button "Create new task", moves us to CreatePortCheckActivity
-     * in future will display dialog with dropdown list of available task types.
-     */
+
     public void gotoCreateTaskActivity(View view) {
         DialogFragment df = new CreateTaskDialog();
         df.show(getFragmentManager(), DIALOG_TAG);
     }
-
 }

@@ -15,14 +15,16 @@ import java.util.Calendar;
 public class PortCheckLog extends SugarRecord {
     private PortCheck taskParent;
     private String response;
-    private boolean succeeded;
+    private int succeeded;
     private long datetime;
 
-    public boolean isSucceeded() {
+    public static final int SUCCESS = 2;
+    public static final int FAIL = 1;
+    public int getShortResult() {
         return succeeded;
     }
 
-    public void setSucceeded(boolean successed) {
+    public void setSucceeded(int successed) {
         this.succeeded = successed;
     }
 
@@ -51,7 +53,7 @@ public class PortCheckLog extends SugarRecord {
 
     public PortCheckLog() { }
 
-    public PortCheckLog(String response, PortCheck task, boolean succeeded) {
+    public PortCheckLog(String response, PortCheck task, int succeeded) {
         this.succeeded = succeeded;
         this.response = response;
         this.taskParent = task;

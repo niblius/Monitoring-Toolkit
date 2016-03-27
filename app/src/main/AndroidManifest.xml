@@ -48,7 +48,7 @@
 
         <meta-data
             android:name="DATABASE"
-            android:value="sollertiamonitoring.db" />
+            android:value="sollertiamonitoring_v2.db" />
         <meta-data
             android:name="VERSION"
             android:value="7" />

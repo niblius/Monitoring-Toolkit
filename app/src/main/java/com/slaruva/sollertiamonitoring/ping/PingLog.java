@@ -17,7 +17,7 @@ public class PingLog extends SugarRecord {
     public static final int FAIL = 1;
     public static final int PARTIAL_SUCCESS = 2;
 
-    public int isSucceeded() {
+    public int getShortResult() {
         return succeeded;
     }
 

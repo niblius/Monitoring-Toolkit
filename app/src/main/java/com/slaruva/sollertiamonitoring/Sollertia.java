@@ -38,7 +38,7 @@ public class Sollertia extends Application {
         if(!wasStated) {
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putBoolean(PREFERENCE_WAS_PREVIOUSLY_STARTED, Boolean.TRUE);
-            editor.commit();
+            editor.apply();
             TaskManagerService.setAlarm(this);
         }
     }

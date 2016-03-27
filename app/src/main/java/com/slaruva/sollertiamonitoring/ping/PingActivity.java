@@ -14,7 +14,6 @@ import java.util.List;
 public class PingActivity extends AppCompatActivity implements AbsListView.OnScrollListener {
     public static final int PAGE_SIZE = 64;
     Ping ping;
-    List<PingLog> logs;
     PingLogsAdapter adapter;
     long pId;
 
@@ -30,7 +29,7 @@ public class PingActivity extends AppCompatActivity implements AbsListView.OnScr
         ip.setText(ping.getIp());
 
         ListView logList = (ListView)findViewById(R.id.log_list);
-        logs = PingLog.find(PingLog.class, "task_parent = ?",
+        List<PingLog> logs = PingLog.find(PingLog.class, "task_parent = ?",
                 new String[]{""+pId},
                 null, "id DESC", ""+PAGE_SIZE);
 
@@ -45,9 +44,9 @@ public class PingActivity extends AppCompatActivity implements AbsListView.OnScr
 
         List<PingLog> newLogs = PingLog.find(PingLog.class, "task_parent = ?",
                 new String[]{""+pId},
-                null, "id DESC", ""+logs.size());
-        logs.clear();
-        logs.addAll(newLogs);
+                null, "id DESC", "" + adapter.getCount());
+        adapter.clear();
+        adapter.addAll(newLogs);
         adapter.notifyDataSetChanged();
     }
 
@@ -57,6 +56,7 @@ public class PingActivity extends AppCompatActivity implements AbsListView.OnScr
         ping.save();
     }
 
+    //  TODO fix delete and move to ping
     public void delete(View v) {
         PingLog.deleteAll(PingLog.class, "task_parent = ?", "" + ping.getId());
         ping.delete();
@@ -74,14 +74,13 @@ public class PingActivity extends AppCompatActivity implements AbsListView.OnScr
         lastItemNumb = firstVisibleItem + visibleItemCount;
         if(preLastItemNumb != lastItemNumb && lastItemNumb == totalItemCount) {
             preLastItemNumb = lastItemNumb;
-            //  Unfortunately Sugar ORM doesn't have OFFSET in
-            //  query builder
+
             List<PingLog> newLogs = PingLog.findWithQuery(PingLog.class,
                     "SELECT * FROM ping_log WHERE task_parent = ? " +
                     "ORDER BY id DESC LIMIT ? " +
                     "OFFSET ?",
-                    ""+pId, ""+PAGE_SIZE, ""+logs.size());
-            logs.addAll(newLogs);
+                    ""+pId, ""+PAGE_SIZE, ""+adapter.getCount());
+            adapter.addAll(newLogs);
             adapter.notifyDataSetChanged();
         }
     }

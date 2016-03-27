@@ -10,6 +10,7 @@ import android.util.Log;
 import com.slaruva.sollertiamonitoring.ping.Ping;
 import com.slaruva.sollertiamonitoring.portcheck.PortCheck;
 
+import java.net.InetAddress;
 import java.util.List;
 import java.util.Vector;
 
@@ -21,27 +22,32 @@ public class TaskManagerService extends IntentService {
 
     public static final int ALARM_ID = 33333;
 
+    public TaskManagerService() {
+        super("TaskManagerService");
+    }
+
     /**
      * Sets up AlarmManager
+     *
      * @param context current context
      */
     public static void setAlarm(Context context) {
         Log.d(TAG, "Setting alarm...");
         Intent intent = new Intent(context, TaskManagerService.class);
         PendingIntent pi = PendingIntent.getService(context, ALARM_ID, intent, 0);
-        AlarmManager am = (AlarmManager)context.getSystemService(Context.ALARM_SERVICE);
-        am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,   //there is no need to wake up device
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        //TODO set it back
+        /*am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
                 AlarmManager.INTERVAL_FIFTEEN_MINUTES,
-                AlarmManager.INTERVAL_FIFTEEN_MINUTES, pi);
-        /*am.setRepeating(AlarmManager.ELAPSED_REALTIME,
-                10000, 20000, pi);*/
+                AlarmManager.INTERVAL_FIFTEEN_MINUTES, pi);*/
+        am.setRepeating(AlarmManager.ELAPSED_REALTIME,
+                10000, 20000, pi);
     }
-
-    public TaskManagerService() { super("TaskManagerService"); }
 
     /**
      * Retrieves all available tasks of all types and adds them into
      * a single vector.
+     *
      * @return list of all tasks
      */
     public static List<Task> getAllTasks() {
@@ -53,10 +59,29 @@ public class TaskManagerService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
+        if (!haveInternetConnection()) {
+            return;
+        }
+
         Log.d(TAG, "Executing tasks...");
         List<Task> tasks = getAllTasks();
-        for(Task t : tasks) {
+        for (Task t : tasks) {
             t.execute(this);
         }
+    }
+
+    public boolean haveInternetConnection() {
+        String[] stableAddresses = {"google.com", "yahoo.com", "github.com"};
+        try {
+            for (String ip : stableAddresses) {
+                InetAddress iAddr = InetAddress.getByName(ip);
+                if (iAddr.toString().equals("")) {
+                    return false;
+                }
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return true;
     }
 }

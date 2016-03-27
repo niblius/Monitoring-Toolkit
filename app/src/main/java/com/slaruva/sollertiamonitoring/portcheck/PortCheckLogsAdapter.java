@@ -16,11 +16,10 @@ import java.util.List;
 import java.util.Locale;
 
 public class PortCheckLogsAdapter extends ArrayAdapter<PortCheckLog> {
-    List<PortCheckLog> logs;
-    int layoutResourceId;
+    private int layoutResourceId;
+
     PortCheckLogsAdapter(Context context, int layoutResourceId, List<PortCheckLog> logs) {
         super(context, layoutResourceId, logs);
-        this.logs = logs;
         this.layoutResourceId = layoutResourceId;
     }
 
@@ -34,7 +33,7 @@ public class PortCheckLogsAdapter extends ArrayAdapter<PortCheckLog> {
             convertView = inflater.inflate(layoutResourceId, null);
         }
 
-        PortCheckLog log = logs.get(position);
+        PortCheckLog log = getItem(position);
 
         TextView logBody = (TextView)convertView.findViewById(R.id.log_body);
         logBody.setText(log.getResponse());
@@ -42,7 +41,7 @@ public class PortCheckLogsAdapter extends ArrayAdapter<PortCheckLog> {
         logDate.setText(log.getDatetime(StandardFormat));
 
         LinearLayout element = (LinearLayout)convertView.findViewById(R.id.element);
-        if(log.isSucceeded())
+        if(log.getShortResult() == PortCheckLog.SUCCESS)
             element.setBackgroundColor(Color.GREEN);
         else
             element.setBackgroundColor(Color.RED);
