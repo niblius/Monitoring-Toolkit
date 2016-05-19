@@ -22,7 +22,7 @@ import java.security.InvalidParameterException;
 import java.util.List;
 
 
-//TODO add specific options (all ping flags)
+// TODO add specific options (all ping flags)
 public class Ping extends SugarRecord implements Task {
     //todo add ping time, %loss and so on
     private String ip;
