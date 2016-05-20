@@ -11,6 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.orm.SugarRecord;
+import com.slaruva.sollertiamonitoring.BridgeServiceToApp;
 import com.slaruva.sollertiamonitoring.Helper;
 import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.SimpleLog;
@@ -68,14 +69,20 @@ public class Ping extends SugarRecord implements Task {
         if(!logs.isEmpty())
             lastLog = (PingLog)logs.get(0);
 
-        if(lastLog == null)
-            holder.img.setImageResource(R.drawable.being_processed);
-        else if (lastLog.getState() == SimpleLog.State.SUCCESS)
-            holder.img.setImageResource(R.drawable.success);
-        else if (lastLog.getState() == SimpleLog.State.FAIL)
-            holder.img.setImageResource(R.drawable.failed);
-        else if (lastLog.getState() == SimpleLog.State.PARTIAL_SUCCESS)
-            holder.img.setImageResource(R.drawable.partial_success);
+        BridgeServiceToApp bridge = BridgeServiceToApp.last(BridgeServiceToApp.class);
+        Log.i(TAG, "Bridge session == " + ((bridge == null) ? "null" : bridge.isLastSessionSuccessful()));
+        if (bridge == null || bridge.isLastSessionSuccessful()) {
+            if (lastLog == null)
+                holder.img.setImageResource(R.drawable.being_processed);
+            else if (lastLog.getState() == SimpleLog.State.SUCCESS)
+                holder.img.setImageResource(R.drawable.success);
+            else if (lastLog.getState() == SimpleLog.State.FAIL)
+                holder.img.setImageResource(R.drawable.failed);
+            else if (lastLog.getState() == SimpleLog.State.PARTIAL_SUCCESS)
+                holder.img.setImageResource(R.drawable.partial_success);
+        } else {
+            holder.img.setImageResource(R.drawable.offline);
+        }
 
         return rowView;
     }

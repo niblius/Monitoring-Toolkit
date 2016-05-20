@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
+import com.slaruva.sollertiamonitoring.BridgeServiceToApp;
 import com.slaruva.sollertiamonitoring.Helper;
 import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.SimpleLog;
@@ -97,13 +98,17 @@ public class PortCheck extends SugarRecord implements Task {
         if(!logs.isEmpty())
             lastLog = (PortCheckLog)logs.get(0);
 
-        if(lastLog == null)
-            holder.img.setImageResource(R.drawable.being_processed);
-        else if (lastLog.getState() == SimpleLog.State.SUCCESS)
-            holder.img.setImageResource(R.drawable.success);
-        else if (lastLog.getState() == SimpleLog.State.FAIL)
-            holder.img.setImageResource(R.drawable.failed);
-
+        BridgeServiceToApp bridge = BridgeServiceToApp.last(BridgeServiceToApp.class);
+        if (bridge == null || bridge.isLastSessionSuccessful()) {
+            if (lastLog == null)
+                holder.img.setImageResource(R.drawable.being_processed);
+            else if (lastLog.getState() == SimpleLog.State.SUCCESS)
+                holder.img.setImageResource(R.drawable.success);
+            else if (lastLog.getState() == SimpleLog.State.FAIL)
+                holder.img.setImageResource(R.drawable.failed);
+        } else {
+            holder.img.setImageResource(R.drawable.offline);
+        }
 
         return rowView;
     }

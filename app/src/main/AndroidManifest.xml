@@ -51,7 +51,7 @@
             android:value="sollertiamonitoring.db" />
         <meta-data
             android:name="VERSION"
-            android:value="15" />
+            android:value="18" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
