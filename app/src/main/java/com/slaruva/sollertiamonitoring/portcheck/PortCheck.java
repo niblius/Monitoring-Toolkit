@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -13,6 +14,7 @@ import com.orm.SugarRecord;
 import com.orm.dsl.Ignore;
 import com.slaruva.sollertiamonitoring.Helper;
 import com.slaruva.sollertiamonitoring.R;
+import com.slaruva.sollertiamonitoring.SimpleLog;
 import com.slaruva.sollertiamonitoring.Task;
 
 import org.apache.commons.net.telnet.TelnetClient;
@@ -55,16 +57,16 @@ public class PortCheck extends SugarRecord implements Task {
             client.get().disconnect();
         } catch (ConnectException ce) {
             return new PortCheckLog(context.getString(R.string.fail),
-                    this, PortCheckLog.FAIL);
+                    this, SimpleLog.State.FAIL);
         } catch (UnknownHostException e) {
             return new PortCheckLog(context.getString(R.string.unknown_host),
-                    this, PortCheckLog.FAIL);
+                    this, SimpleLog.State.FAIL);
         } catch (IOException e) {
             return new PortCheckLog(context.getString(R.string.error),
-                    this, PortCheckLog.FAIL);
+                    this, SimpleLog.State.FAIL);
         }
         return new PortCheckLog(context.getString(R.string.success),
-                this, PortCheckLog.SUCCESS);
+                this, SimpleLog.State.SUCCESS);
     }
 
     @Override
@@ -79,6 +81,7 @@ public class PortCheck extends SugarRecord implements Task {
             holder.ipView = (TextView)rowView.findViewById(R.id.ip);
             holder.portView = (TextView)rowView.findViewById(R.id.port);
             holder.element = (RelativeLayout) rowView.findViewById(R.id.element);
+            holder.img = (ImageView) rowView.findViewById(R.id.state);
             rowView.setTag(holder);
         } else {
             holder = (PortCheckViewHolder)rowView.getTag();
@@ -95,11 +98,11 @@ public class PortCheck extends SugarRecord implements Task {
             lastLog = (PortCheckLog)logs.get(0);
 
         if(lastLog == null)
-            holder.element.setBackgroundColor(Color.WHITE);
-        else if (lastLog.getShortResult() == PortCheckLog.SUCCESS)
-            holder.element.setBackgroundColor(Color.GREEN);
-        else if (lastLog.getShortResult() == PortCheckLog.FAIL)
-            holder.element.setBackgroundColor(Color.RED);
+            holder.img.setImageResource(R.drawable.being_processed);
+        else if (lastLog.getState() == SimpleLog.State.SUCCESS)
+            holder.img.setImageResource(R.drawable.success);
+        else if (lastLog.getState() == SimpleLog.State.FAIL)
+            holder.img.setImageResource(R.drawable.failed);
 
 
         return rowView;
@@ -160,4 +163,5 @@ class PortCheckViewHolder {
     TextView ipView;
     TextView portView;
     RelativeLayout element;
+    ImageView img;
 }

@@ -1,6 +1,6 @@
 package com.slaruva.sollertiamonitoring.portcheck;
 
-import com.orm.SugarRecord;
+import com.slaruva.sollertiamonitoring.SimpleLog;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -12,33 +12,11 @@ import java.util.Calendar;
  * time of its creation in milliseconds
 */
 
-public class PortCheckLog extends SugarRecord {
+public class PortCheckLog extends SimpleLog {
     private PortCheck taskParent;
     private String response;
-    private int succeeded;
     private long datetime;
-
-    public static final int SUCCESS = 2;
-    public static final int FAIL = 1;
-    public int getShortResult() {
-        return succeeded;
-    }
-
-    public void setSucceeded(int successed) {
-        this.succeeded = successed;
-    }
-
-    public PortCheck getTaskParent() {
-        return taskParent;
-    }
-
-    public String getResponse() {
-        return response;
-    }
-
-    public long getDatetime() {
-        return datetime;
-    }
+    private int state;
 
     /**
      * Returns datetime in specific format
@@ -53,10 +31,30 @@ public class PortCheckLog extends SugarRecord {
 
     public PortCheckLog() { }
 
-    public PortCheckLog(String response, PortCheck task, int succeeded) {
-        this.succeeded = succeeded;
+    public PortCheckLog(String response, PortCheck task, State succeeded) {
+        setState(succeeded);
         this.response = response;
         this.taskParent = task;
         datetime = Calendar.getInstance().getTimeInMillis();    //TODO i'm not sure about zones...
+    }
+
+    public PortCheck getTaskParent() {
+        return taskParent;
+    }
+
+    public String getResponse() {
+        return response;
+    }
+
+    public long getDatetime() {
+        return datetime;
+    }
+
+    public State getState() {
+        return State.fromInteger(state);
+    }
+
+    public void setState(State s) {
+        state = State.toInteger(s);
     }
 }

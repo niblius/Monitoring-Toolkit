@@ -6,12 +6,14 @@ import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.orm.SugarRecord;
 import com.slaruva.sollertiamonitoring.Helper;
 import com.slaruva.sollertiamonitoring.R;
+import com.slaruva.sollertiamonitoring.SimpleLog;
 import com.slaruva.sollertiamonitoring.Task;
 
 import java.io.BufferedReader;
@@ -34,7 +36,7 @@ public class Ping extends SugarRecord implements Task {
         try {
             log = ping();
         } catch (Exception e) {
-            log = new PingLog(e.getMessage(), this, PingLog.FAIL);
+            log = new PingLog(e.getMessage(), this, SimpleLog.State.FAIL);
         }
         log.save();
     }
@@ -50,6 +52,7 @@ public class Ping extends SugarRecord implements Task {
             holder = new PingViewHolder();
             holder.ipView = (TextView)rowView.findViewById(R.id.ip);
             holder.element = (RelativeLayout) rowView.findViewById(R.id.element);
+            holder.img = (ImageView) rowView.findViewById(R.id.state);
             rowView.setTag(holder);
         } else {
             holder = (PingViewHolder) rowView.getTag();
@@ -66,13 +69,13 @@ public class Ping extends SugarRecord implements Task {
             lastLog = (PingLog)logs.get(0);
 
         if(lastLog == null)
-            holder.element.setBackgroundColor(Color.WHITE);
-        else if (lastLog.getShortResult() == PingLog.SUCCESS)
-            holder.element.setBackgroundColor(Color.GREEN);
-        else if (lastLog.getShortResult() == PingLog.FAIL)
-            holder.element.setBackgroundColor(Color.RED);
-        else if (lastLog.getShortResult() == PingLog.PARTIAL_SUCCESS)
-            holder.element.setBackgroundColor(Color.YELLOW);
+            holder.img.setImageResource(R.drawable.being_processed);
+        else if (lastLog.getState() == SimpleLog.State.SUCCESS)
+            holder.img.setImageResource(R.drawable.success);
+        else if (lastLog.getState() == SimpleLog.State.FAIL)
+            holder.img.setImageResource(R.drawable.failed);
+        else if (lastLog.getState() == SimpleLog.State.PARTIAL_SUCCESS)
+            holder.img.setImageResource(R.drawable.partial_success);
 
         return rowView;
     }
@@ -189,7 +192,7 @@ public class Ping extends SugarRecord implements Task {
         if (s.contains(" 100% packet loss")) {
             log.setResponse("100% packet loss");
             log.setLoss(100);
-            log.setSucceeded(PingLog.FAIL);
+            log.setState(SimpleLog.State.FAIL);
         } else if (s.contains("% packet loss")) {
             int start = s.indexOf("/mdev = ");
             int end = s.indexOf(" ms\n", start);
@@ -206,10 +209,10 @@ public class Ping extends SugarRecord implements Task {
             log.setLoss(loss);
             if(loss == 0) {
                 log.setResponse("Success");
-                log.setSucceeded(PingLog.SUCCESS);
+                log.setState(SimpleLog.State.SUCCESS);
             } else  {
                 log.setResponse("Partial packet loss");
-                log.setSucceeded(PingLog.PARTIAL_SUCCESS);
+                log.setState(SimpleLog.State.PARTIAL_SUCCESS);
             }
 
             start = s.indexOf("transmitted, ");
@@ -217,10 +220,10 @@ public class Ping extends SugarRecord implements Task {
             log.setReceived(Integer.parseInt(s.substring(start + 13, end)));
         } else if (s.contains("unknown host")) {
             log.setResponse("unknown host");
-            log.setSucceeded(PingLog.FAIL);
+            log.setState(SimpleLog.State.FAIL);
         } else {
             log.setResponse("Error");
-            log.setSucceeded(PingLog.FAIL);
+            log.setState(SimpleLog.State.FAIL);
         }
         return log;
     }
@@ -229,4 +232,5 @@ public class Ping extends SugarRecord implements Task {
 class PingViewHolder {
     TextView ipView;
     RelativeLayout element;
+    ImageView img;
 }

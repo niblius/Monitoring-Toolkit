@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.slaruva.sollertiamonitoring.R;
+import com.slaruva.sollertiamonitoring.SimpleLog;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -55,11 +56,11 @@ public class PingLogsAdapter extends ArrayAdapter<PingLog> {
         transmitted.setText("" + log.getTransmitted());
 
         LinearLayout element = (LinearLayout)convertView.findViewById(R.id.element);
-        if(log.getShortResult() == PingLog.SUCCESS)
+        if (log.getState() == SimpleLog.State.SUCCESS)
             element.setBackgroundColor(Color.GREEN);
-        else if(log.getShortResult() == PingLog.FAIL)
+        else if (log.getState() == SimpleLog.State.FAIL)
             element.setBackgroundColor(Color.RED);
-        else if(log.getShortResult() == PingLog.PARTIAL_SUCCESS)
+        else if (log.getState() == SimpleLog.State.PARTIAL_SUCCESS)
             element.setBackgroundColor(Color.YELLOW);
 
         return convertView;

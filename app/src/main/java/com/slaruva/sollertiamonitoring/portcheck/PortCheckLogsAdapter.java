@@ -10,6 +10,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.slaruva.sollertiamonitoring.R;
+import com.slaruva.sollertiamonitoring.SimpleLog;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -41,7 +42,7 @@ public class PortCheckLogsAdapter extends ArrayAdapter<PortCheckLog> {
         logDate.setText(log.getDatetime(StandardFormat));
 
         LinearLayout element = (LinearLayout)convertView.findViewById(R.id.element);
-        if(log.getShortResult() == PortCheckLog.SUCCESS)
+        if (log.getState() == SimpleLog.State.SUCCESS)
             element.setBackgroundColor(Color.GREEN);
         else
             element.setBackgroundColor(Color.RED);

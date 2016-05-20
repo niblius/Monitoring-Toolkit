@@ -1,31 +1,44 @@
 package com.slaruva.sollertiamonitoring.ping;
 
-import com.orm.SugarRecord;
+import com.slaruva.sollertiamonitoring.SimpleLog;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
-public class PingLog extends SugarRecord {
+public class PingLog extends SimpleLog {
     private Ping taskParent;
     private String response;
     private double min = 0d, avg = 0d, max = 0d, mdev = 0d;
     private int received = 0, transmitted = 0;
     private int loss = 0;
-    private int succeeded = 0;
-
-    public static final int SUCCESS = 3;
-    public static final int FAIL = 1;
-    public static final int PARTIAL_SUCCESS = 2;
-
-    public int getShortResult() {
-        return succeeded;
-    }
-
-    public void setSucceeded(int succeeded) {
-        this.succeeded = succeeded;
-    }
-
     private long datetime;
+    private int state;
+
+    public String getDatetime(SimpleDateFormat formatter) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(datetime);
+        return formatter.format(calendar.getTime());
+    }
+
+    public PingLog(String response, Ping task, State succeeded) {
+        this.setState(succeeded);
+        this.response = response;
+        this.taskParent = task;
+        datetime = Calendar.getInstance().getTimeInMillis();
+    }
+
+    public PingLog(Ping task) {
+        this.taskParent = task;
+        datetime = Calendar.getInstance().getTimeInMillis();
+    }
+
+    public State getState() {
+        return State.fromInteger(state);
+    }
+
+    public void setState(State s) {
+        state = State.toInteger(s);
+    }
 
     public Ping getTaskParent() {
         return taskParent;
@@ -67,12 +80,6 @@ public class PingLog extends SugarRecord {
         return datetime;
     }
 
-    public String getDatetime(SimpleDateFormat formatter) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(datetime);
-        return formatter.format(calendar.getTime());
-    }
-
     public double getMin() {
         return min;
     }
@@ -103,18 +110,6 @@ public class PingLog extends SugarRecord {
 
     public void setMdev(double mdev) {
         this.mdev = mdev;
-    }
-
-    public PingLog(String response, Ping task, int succeeded) {
-        this.succeeded = succeeded;
-        this.response = response;
-        this.taskParent = task;
-        datetime = Calendar.getInstance().getTimeInMillis();
-    }
-
-    public PingLog(Ping task) {
-        this.taskParent = task;
-        datetime = Calendar.getInstance().getTimeInMillis();
     }
 
     public PingLog() { }
