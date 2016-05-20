@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.slaruva.sollertiamonitoring.CreateTaskActivity;
 import com.slaruva.sollertiamonitoring.R;
 
 
@@ -15,7 +16,7 @@ import com.slaruva.sollertiamonitoring.R;
 /**
  * Activity responsible for creating new tasks of type: PortCheck
  */
-public class CreatePortCheckActivity extends AppCompatActivity {
+public class CreatePortCheckActivity extends CreateTaskActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,20 +24,6 @@ public class CreatePortCheckActivity extends AppCompatActivity {
         setContentView(R.layout.activity_create_port_check);
 
         initToolbar();
-    }
-
-    Toolbar toolbar;
-
-    private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.create_new_task);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        setSupportActionBar(toolbar);
     }
 
     /**

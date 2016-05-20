@@ -9,11 +9,12 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.slaruva.sollertiamonitoring.R;
+import com.slaruva.sollertiamonitoring.TaskActivity;
 
 import java.util.List;
 // TODO ping + portcheck are very similar, copy/paste code fix it!!!
 
-public class PortCheckActivity extends AppCompatActivity implements AbsListView.OnScrollListener {
+public class PortCheckActivity extends TaskActivity implements AbsListView.OnScrollListener {
     public static int PAGE_SIZE = 64;
     PortCheck pc;
     PortCheckLogsAdapter adapter;
@@ -42,21 +43,7 @@ public class PortCheckActivity extends AppCompatActivity implements AbsListView.
         logList.setAdapter(adapter);
         logList.setOnScrollListener(this);
 
-        initToolbar();
-    }
-
-    Toolbar toolbar;
-
-    private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(pc.getIp());
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        setSupportActionBar(toolbar);
+        initToolbar(pc.getIp());
     }
 
     @Override
@@ -105,5 +92,12 @@ public class PortCheckActivity extends AppCompatActivity implements AbsListView.
             adapter.addAll(newLogs);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void deleteLogs() {
+        PortCheckLog.deleteAll(PortCheckLog.class, "task_parent = ? ", "" + pc.getId());
+        adapter.clear();
+        adapter.notifyDataSetChanged();
     }
 }

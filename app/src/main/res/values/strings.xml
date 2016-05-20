@@ -1,4 +1,12 @@
 <resources>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="clear_logs">Clear all logs</string>
+    <string name="settings">Settings</string>
+    <string name="about">About</string>
+    <string name="faq">FAQ</string>
+    <string name="turnonoff">Turn On/Off</string>
     <string name="app_name">Sollertia Monitoring</string>
     <string name="create_new_task">Create new task</string>
     <string name="url_example">example.com</string>

@@ -1,18 +1,17 @@
 package com.slaruva.sollertiamonitoring.ping;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import com.slaruva.sollertiamonitoring.R;
+import com.slaruva.sollertiamonitoring.TaskActivity;
 
 import java.util.List;
 
-public class PingActivity extends AppCompatActivity implements AbsListView.OnScrollListener {
+public class PingActivity extends TaskActivity implements AbsListView.OnScrollListener {
     public static final int PAGE_SIZE = 64;
     Ping ping;
     PingLogsAdapter adapter;
@@ -38,21 +37,7 @@ public class PingActivity extends AppCompatActivity implements AbsListView.OnScr
         logList.setAdapter(adapter);
         logList.setOnScrollListener(this);
 
-        initToolbar();
-    }
-
-    Toolbar toolbar;
-
-    private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(ping.getIp());
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
-        setSupportActionBar(toolbar);
+        initToolbar(ping.getIp());
     }
 
     @Override
@@ -100,5 +85,12 @@ public class PingActivity extends AppCompatActivity implements AbsListView.OnScr
             adapter.addAll(newLogs);
             adapter.notifyDataSetChanged();
         }
+    }
+
+    @Override
+    public void deleteLogs() {
+        PingLog.deleteAll(PingLog.class, "task_parent = ?", "" + ping.getId());
+        adapter.clear();
+        adapter.notifyDataSetChanged();
     }
 }

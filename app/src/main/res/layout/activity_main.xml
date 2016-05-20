@@ -17,14 +17,6 @@
         tools:context=".MainActivity"
         android:orientation="vertical">
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/create_new_task"
-            android:id="@+id/button_create_new_task"
-            android:layout_gravity="center_horizontal"
-            android:onClick="gotoCreateTaskActivity" />
-
         <ListView
             android:orientation="vertical"
             android:layout_width="match_parent"

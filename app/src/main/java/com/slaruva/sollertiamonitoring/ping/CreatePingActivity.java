@@ -7,31 +7,16 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.slaruva.sollertiamonitoring.CreateTaskActivity;
 import com.slaruva.sollertiamonitoring.R;
 
-public class CreatePingActivity extends AppCompatActivity {
+public class CreatePingActivity extends CreateTaskActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_ping);
 
         initToolbar();
-    }
-
-    Toolbar toolbar;
-
-    private void initToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.create_new_task);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setDisplayShowHomeEnabled(true);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onBackPressed();
-            }
-        });
     }
 
     /**
