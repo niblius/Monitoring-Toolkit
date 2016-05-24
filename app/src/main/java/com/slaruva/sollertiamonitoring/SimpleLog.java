@@ -32,6 +32,6 @@ public abstract class SimpleLog extends SugarRecord {
         }
     }
 
-    abstract public State getState();
-    abstract public void setState(State s);
+    public abstract State getState();
+    public abstract void setState(State s);
 }

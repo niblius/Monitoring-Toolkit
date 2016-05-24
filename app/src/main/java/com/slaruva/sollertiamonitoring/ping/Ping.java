@@ -18,6 +18,7 @@ import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.SimpleLog;
 import com.slaruva.sollertiamonitoring.StatusDisplayer;
 import com.slaruva.sollertiamonitoring.Task;
+import com.slaruva.sollertiamonitoring.TaskScrollableActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -83,11 +84,10 @@ public class Ping extends SugarRecord implements Task {
         return lastLog;
     }
 
-    public static final String PING_ID = "PING_ID";
     @Override
     public Intent getIntentToDetailedInfo(Context context) {
         Intent i = new Intent(context, PingActivity.class);
-        i.putExtra(PING_ID, this.getId().longValue());
+        i.putExtra(TaskScrollableActivity.TASK_ID_TAG, this.getId().longValue());
         return i;
     }
 

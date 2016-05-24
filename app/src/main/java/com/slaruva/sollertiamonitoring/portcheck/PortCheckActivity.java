@@ -1,103 +1,70 @@
 package com.slaruva.sollertiamonitoring.portcheck;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.AbsListView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
 import com.slaruva.sollertiamonitoring.R;
-import com.slaruva.sollertiamonitoring.TaskActivity;
+import com.slaruva.sollertiamonitoring.TaskScrollableActivity;
 
 import java.util.List;
 // TODO ping + portcheck are very similar, copy/paste code fix it!!!
 
-public class PortCheckActivity extends TaskActivity implements AbsListView.OnScrollListener {
-    public static int PAGE_SIZE = 64;
-    PortCheck pc;
-    PortCheckLogsAdapter adapter;
-    long pcId;
-    int lastItemNumb = 0;
-    int preLastItemNumb = 0;
+public class PortCheckActivity extends TaskScrollableActivity<PortCheck, PortCheckLog> {
+    private PortCheck pc;
 
+    @Override
+    protected Class _getLogClass() {
+        return PortCheckLog.class;
+    }
+
+    @Override
+    protected Class _getTaskClass() {
+        return PortCheck.class;
+    }
+
+    @Override
+    protected ArrayAdapter<PortCheckLog> createAdapter(Context context, int layoutResourceId,
+                                                     List<PortCheckLog> logs) {
+        return new PortCheckLogsAdapter(context, layoutResourceId, logs);
+    }
+
+    @SuppressLint("DefaultLocale")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_port_check);
+        init();
 
-        pcId = getIntent().getExtras().getLong(PortCheck.PORT_CHECK_ID);
-        pc = PortCheck.findById(PortCheck.class, pcId);
+        pc = (PortCheck) task;
 
-        EditText ip = (EditText) findViewById(R.id.ip);
-        ip.setText(pc.getIp());
+        setIpToField();
+        setPortToField();
+    }
+
+    @SuppressLint("DefaultLocale")
+    private void setPortToField() {
         EditText port = (EditText) findViewById(R.id.port);
-        port.setText("" + pc.getPort());
-
-        ListView logList = (ListView) findViewById(R.id.log_list);
-        List<PortCheckLog> logs = PortCheckLog.find(PortCheckLog.class, "task_parent = ?",
-                new String[]{"" + pcId},
-                null, "id DESC", "" + PAGE_SIZE);
-        adapter = new PortCheckLogsAdapter(this, R.layout.row_port_check_log, logs);
-        logList.setAdapter(adapter);
-        logList.setOnScrollListener(this);
-
-        initToolbar(pc.getIp());
+        port.setText(String.format("%d", pc.getPort()));
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        List<PortCheckLog> newLogs = PortCheckLog.find(PortCheckLog.class, "task_parent = ?",
-                new String[]{"" + pcId},
-                null, "id DESC", "" + adapter.getCount());
-        adapter.clear();
-        adapter.addAll(newLogs);
-        adapter.notifyDataSetChanged();
+        clearAndUpdateAdapter();
     }
 
     public void save(View v) {
+        // TODO validations in activities
         EditText ip = (EditText) findViewById(R.id.ip);
         pc.setIp(ip.getText().toString());
         EditText port = (EditText) findViewById(R.id.port);
         pc.setPort(Integer.parseInt(port.getText().toString()));
         pc.save();
-    }
-
-    public void delete(View v) {
-        PortCheckLog.deleteAll(PortCheckLog.class, "task_parent = ? ", "" + pc.getId());
-        pc.delete();
-        this.finish();
-    }
-
-    @Override
-    public void onScrollStateChanged(AbsListView view, int scrollState) {
-    }
-
-    @Override
-    public void onScroll(AbsListView view, int firstVisibleItem,
-                         int visibleItemCount, int totalItemCount) {
-        lastItemNumb = firstVisibleItem + visibleItemCount;
-        if (preLastItemNumb != lastItemNumb && lastItemNumb == totalItemCount) {
-            preLastItemNumb = lastItemNumb;
-            //  Unfortunately Sugar ORM doesn't have OFFSET in
-            //  query builder
-            List<PortCheckLog> newLogs = PortCheckLog.findWithQuery(PortCheckLog.class,
-                    "SELECT * FROM port_check_log WHERE task_parent = ? " +
-                            "ORDER BY id DESC LIMIT ? " +
-                            "OFFSET ?",
-                    "" + pcId, "" + PAGE_SIZE, "" + adapter.getCount());
-            adapter.addAll(newLogs);
-            adapter.notifyDataSetChanged();
-        }
-    }
-
-    @Override
-    public void deleteLogs() {
-        PortCheckLog.deleteAll(PortCheckLog.class, "task_parent = ? ", "" + pc.getId());
-        adapter.clear();
-        adapter.notifyDataSetChanged();
     }
 }

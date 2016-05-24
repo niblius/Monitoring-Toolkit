@@ -19,6 +19,7 @@ import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.SimpleLog;
 import com.slaruva.sollertiamonitoring.StatusDisplayer;
 import com.slaruva.sollertiamonitoring.Task;
+import com.slaruva.sollertiamonitoring.TaskScrollableActivity;
 import com.slaruva.sollertiamonitoring.ping.IpDisplayer;
 
 import org.apache.commons.net.telnet.TelnetClient;
@@ -118,11 +119,10 @@ public class PortCheck extends SugarRecord implements Task {
         return lastLog;
     }
 
-    public static final String PORT_CHECK_ID = "PORT_CHECK_ID";
     @Override
     public Intent getIntentToDetailedInfo(Context context) {
         Intent i = new Intent(context, PortCheckActivity.class);
-        i.putExtra(PORT_CHECK_ID, this.getId().longValue());
+        i.putExtra(TaskScrollableActivity.TASK_ID_TAG, this.getId().longValue());
         return i;
     }
 

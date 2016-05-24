@@ -53,7 +53,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/delete"
                     android:id="@+id/button_delete"
-                    android:onClick="delete" />
+                    android:onClick="onDelete" />
             </LinearLayout>
 
             <ListView
