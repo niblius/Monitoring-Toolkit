@@ -5,7 +5,6 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -17,11 +16,14 @@ import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.orm.SugarRecord;
 import com.orm.util.NamingHelper;
 
 import java.util.List;
+
+// TODO notification about invalid input
 
 public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L extends SimpleLog>
         extends AppCompatActivity implements AbsListView.OnScrollListener {
@@ -39,6 +41,16 @@ public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L ext
     protected abstract Class _getTaskClass();
     protected abstract ArrayAdapter<L> createAdapter(Context context, int layoutResourceId,
                                                      List<L> logs);
+
+    protected void errorVisibilityOn() {
+        TextView err = (TextView) findViewById(R.id.error_view);
+        err.setVisibility(View.VISIBLE);
+    }
+
+    protected void errorVisibilityOff() {
+        TextView err = (TextView) findViewById(R.id.error_view);
+        err.setVisibility(View.INVISIBLE);
+    }
 
     protected void setIpToField() {
         EditText ip = (EditText)findViewById(R.id.ip);

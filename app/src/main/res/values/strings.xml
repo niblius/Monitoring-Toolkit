@@ -1,4 +1,5 @@
 <resources>
+    <string name="invalid_input">Invalid input</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="are_you_sure">Are you sure?</string>

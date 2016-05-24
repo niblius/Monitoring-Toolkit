@@ -59,12 +59,19 @@ public class PortCheckActivity extends TaskScrollableActivity<PortCheck, PortChe
         clearAndUpdateAdapter();
     }
 
-    public void save(View v) {
+    public void onSave(View v) {
         // TODO validations in activities
         EditText ip = (EditText) findViewById(R.id.ip);
-        pc.setIp(ip.getText().toString());
+        if (!pc.setIp(ip.getText().toString())) {
+            errorVisibilityOn();
+            return;
+        }
         EditText port = (EditText) findViewById(R.id.port);
-        pc.setPort(Integer.parseInt(port.getText().toString()));
+        if (!pc.setPort(Integer.parseInt(port.getText().toString()))) {
+            errorVisibilityOn();
+            return;
+        }
+        errorVisibilityOff();
         pc.save();
     }
 }
