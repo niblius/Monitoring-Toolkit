@@ -50,10 +50,12 @@ public class PortCheckLog extends SimpleLog {
         return datetime;
     }
 
+    @Override
     public State getState() {
         return State.fromInteger(state);
     }
 
+    @Override
     public void setState(State s) {
         state = State.toInteger(s);
     }

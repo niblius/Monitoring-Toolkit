@@ -3,6 +3,7 @@ package com.slaruva.sollertiamonitoring;
 import android.content.Context;
 import android.content.Intent;
 import android.view.View;
+import android.view.ViewGroup;
 
 /**
  * Interface for each task, all external operations with the task
@@ -20,7 +21,7 @@ public interface Task {
      * @param context current context
      * @return View object
      */
-    public View getRowView(Context context, View lastRowView);
+    public View getRowView(Context context, View lastRowView, ViewGroup parent);
 
     /**
      * Represents the task (completely) in Activity
@@ -28,4 +29,11 @@ public interface Task {
      * @return
      */
     public Intent getIntentToDetailedInfo(Context context);
+
+    public long countSuccessfulLogs();
+    public long countAllLogs();
+
+    public SimpleLog getLastLog();
+
+    public String getIp();
 }

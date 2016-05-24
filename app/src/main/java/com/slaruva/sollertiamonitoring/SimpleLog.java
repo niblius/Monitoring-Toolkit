@@ -2,7 +2,7 @@ package com.slaruva.sollertiamonitoring;
 
 import com.orm.SugarRecord;
 
-public class SimpleLog extends SugarRecord {
+public abstract class SimpleLog extends SugarRecord {
     public enum State {
         SUCCESS,
         FAIL,
@@ -31,4 +31,7 @@ public class SimpleLog extends SugarRecord {
             }
         }
     }
+
+    abstract public State getState();
+    abstract public void setState(State s);
 }

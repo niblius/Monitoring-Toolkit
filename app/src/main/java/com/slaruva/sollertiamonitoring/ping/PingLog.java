@@ -32,10 +32,12 @@ public class PingLog extends SimpleLog {
         datetime = Calendar.getInstance().getTimeInMillis();
     }
 
+    @Override
     public State getState() {
         return State.fromInteger(state);
     }
 
+    @Override
     public void setState(State s) {
         state = State.toInteger(s);
     }

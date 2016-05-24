@@ -1,22 +1,25 @@
 package com.slaruva.sollertiamonitoring.portcheck;
 
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.orm.SugarRecord;
-import com.orm.dsl.Ignore;
-import com.slaruva.sollertiamonitoring.BridgeServiceToApp;
 import com.slaruva.sollertiamonitoring.Helper;
+import com.slaruva.sollertiamonitoring.PercentageDisplayer;
 import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.SimpleLog;
+import com.slaruva.sollertiamonitoring.StatusDisplayer;
 import com.slaruva.sollertiamonitoring.Task;
+import com.slaruva.sollertiamonitoring.ping.IpDisplayer;
 
 import org.apache.commons.net.telnet.TelnetClient;
 
@@ -70,26 +73,41 @@ public class PortCheck extends SugarRecord implements Task {
                 this, SimpleLog.State.SUCCESS);
     }
 
+    @SuppressLint("DefaultLocale")
     @Override
-    public View getRowView(Context context, View rowView) {
+    public View getRowView(Context context, View rowView, ViewGroup parent) {
         PortCheckViewHolder holder;
         if(rowView == null) {
             LayoutInflater inflater = (LayoutInflater)
                     context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            rowView = inflater.inflate(R.layout.row_port_check, null);
+            rowView = inflater.inflate(R.layout.row_port_check, parent, false);
 
             holder = new PortCheckViewHolder();
-            holder.ipView = (TextView)rowView.findViewById(R.id.ip);
+            holder.ip = new IpDisplayer((TextView)rowView.findViewById(R.id.ip));
             holder.portView = (TextView)rowView.findViewById(R.id.port);
             holder.element = (RelativeLayout) rowView.findViewById(R.id.element);
-            holder.img = (ImageView) rowView.findViewById(R.id.state);
+            holder.img = new StatusDisplayer((ImageView) rowView.findViewById(R.id.state));
+            holder.percentage =
+                    new PercentageDisplayer(
+                            (LinearLayout) rowView.findViewById(R.id.percentage_displayer));
             rowView.setTag(holder);
         } else {
             holder = (PortCheckViewHolder)rowView.getTag();
         }
 
-        holder.ipView.setText(ip);
-        holder.portView.setText("" + port);
+        holder.ip.updateView(this);
+
+        holder.percentage.updateView(this);
+
+        holder.portView.setText(String.format("%d", port));
+
+        holder.img.updateView(this);
+
+        return rowView;
+    }
+
+    @Override
+    public SimpleLog getLastLog() {
         List logs = PortCheckLog.find(PortCheckLog.class, "task_parent = ?",
                 new String[]{this.getId().toString()},
                 null, "id DESC", "1");
@@ -97,20 +115,7 @@ public class PortCheck extends SugarRecord implements Task {
         PortCheckLog lastLog = null;
         if(!logs.isEmpty())
             lastLog = (PortCheckLog)logs.get(0);
-
-        BridgeServiceToApp bridge = BridgeServiceToApp.last(BridgeServiceToApp.class);
-        if (bridge == null || bridge.isLastSessionSuccessful()) {
-            if (lastLog == null)
-                holder.img.setImageResource(R.drawable.being_processed);
-            else if (lastLog.getState() == SimpleLog.State.SUCCESS)
-                holder.img.setImageResource(R.drawable.success);
-            else if (lastLog.getState() == SimpleLog.State.FAIL)
-                holder.img.setImageResource(R.drawable.failed);
-        } else {
-            holder.img.setImageResource(R.drawable.offline);
-        }
-
-        return rowView;
+        return lastLog;
     }
 
     public static final String PORT_CHECK_ID = "PORT_CHECK_ID";
@@ -121,6 +126,7 @@ public class PortCheck extends SugarRecord implements Task {
         return i;
     }
 
+    @Override
     public String getIp() {
         return ip;
     }
@@ -138,9 +144,7 @@ public class PortCheck extends SugarRecord implements Task {
         return port;
     }
 
-    @Ignore
     public static final int MAX_PORT = 65535;
-    @Ignore
     public static final int MIN_PORT = 1;
     public boolean setPort(int port) {
         if(port < MIN_PORT || port > MAX_PORT) {
@@ -162,11 +166,25 @@ public class PortCheck extends SugarRecord implements Task {
     }
 
     public PortCheck() { }
-}
 
-class PortCheckViewHolder {
-    TextView ipView;
-    TextView portView;
-    RelativeLayout element;
-    ImageView img;
+    @Override
+    public long countSuccessfulLogs() {
+        return PortCheckLog.count(PortCheckLog.class, "task_parent = ? AND state = ?",
+                new String[]{Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.SUCCESS)),
+                        this.getId().toString()});
+    }
+
+    @Override
+    public long countAllLogs() {
+        return PortCheckLog.count(PortCheckLog.class, "task_parent = ?",
+                new String[]{this.getId().toString()});
+    }
+
+    class PortCheckViewHolder {
+        IpDisplayer ip;
+        TextView portView;
+        RelativeLayout element;
+        StatusDisplayer img;
+        PercentageDisplayer percentage;
+    }
 }

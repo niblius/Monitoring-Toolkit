@@ -1,26 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/element"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:id="@+id/element">
+    android:orientation="horizontal">
 
     <LinearLayout
-        android:layout_width="match_parent" android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start">
 
-        <ImageView
-            android:id="@+id/state"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent" />
+        <include layout="@layout/status"/>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Medium Text"
-            android:id="@+id/ip" />
+        <include layout="@layout/ip"/>
 
     </LinearLayout>
+
+    <include layout="@layout/percentage"/>
 
 </RelativeLayout>

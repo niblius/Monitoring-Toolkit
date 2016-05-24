@@ -32,6 +32,6 @@ public class TasksAdapter extends ArrayAdapter<Task> {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return getItem(position).getRowView(getContext(), convertView);
+        return getItem(position).getRowView(getContext(), convertView, parent);
     }
 }

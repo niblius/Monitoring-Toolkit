@@ -2,19 +2,21 @@ package com.slaruva.sollertiamonitoring.ping;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.orm.SugarRecord;
-import com.slaruva.sollertiamonitoring.BridgeServiceToApp;
 import com.slaruva.sollertiamonitoring.Helper;
+import com.slaruva.sollertiamonitoring.PercentageDisplayer;
 import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.SimpleLog;
+import com.slaruva.sollertiamonitoring.StatusDisplayer;
 import com.slaruva.sollertiamonitoring.Task;
 
 import java.io.BufferedReader;
@@ -43,7 +45,7 @@ public class Ping extends SugarRecord implements Task {
     }
 
     @Override
-    public View getRowView(Context context, View rowView) {
+    public View getRowView(Context context, View rowView, ViewGroup parent) {
         PingViewHolder holder;
         if(rowView == null) {
             LayoutInflater inflater = (LayoutInflater)
@@ -51,16 +53,26 @@ public class Ping extends SugarRecord implements Task {
             rowView = inflater.inflate(R.layout.row_ping, null);
 
             holder = new PingViewHolder();
-            holder.ipView = (TextView)rowView.findViewById(R.id.ip);
+            holder.ip = new IpDisplayer((TextView) rowView.findViewById(R.id.ip));
             holder.element = (RelativeLayout) rowView.findViewById(R.id.element);
-            holder.img = (ImageView) rowView.findViewById(R.id.state);
+            holder.img = new StatusDisplayer((ImageView) rowView.findViewById(R.id.state));
+            holder.percentage = new PercentageDisplayer(
+                    (LinearLayout) rowView.findViewById(R.id.percentage_displayer));
             rowView.setTag(holder);
         } else {
             holder = (PingViewHolder) rowView.getTag();
         }
 
-        holder.ipView.setText(ip);
+        holder.ip.updateView(this);
 
+        holder.percentage.updateView(this);
+
+        holder.img.updateView(this);
+        return rowView;
+    }
+
+    @Override
+    public SimpleLog getLastLog() {
         List logs = PingLog.find(PingLog.class, "task_parent = ?",
                 new String[]{this.getId().toString()},
                 null, "id DESC", "1");
@@ -68,23 +80,7 @@ public class Ping extends SugarRecord implements Task {
         PingLog lastLog = null;
         if(!logs.isEmpty())
             lastLog = (PingLog)logs.get(0);
-
-        BridgeServiceToApp bridge = BridgeServiceToApp.last(BridgeServiceToApp.class);
-        Log.i(TAG, "Bridge session == " + ((bridge == null) ? "null" : bridge.isLastSessionSuccessful()));
-        if (bridge == null || bridge.isLastSessionSuccessful()) {
-            if (lastLog == null)
-                holder.img.setImageResource(R.drawable.being_processed);
-            else if (lastLog.getState() == SimpleLog.State.SUCCESS)
-                holder.img.setImageResource(R.drawable.success);
-            else if (lastLog.getState() == SimpleLog.State.FAIL)
-                holder.img.setImageResource(R.drawable.failed);
-            else if (lastLog.getState() == SimpleLog.State.PARTIAL_SUCCESS)
-                holder.img.setImageResource(R.drawable.partial_success);
-        } else {
-            holder.img.setImageResource(R.drawable.offline);
-        }
-
-        return rowView;
+        return lastLog;
     }
 
     public static final String PING_ID = "PING_ID";
@@ -95,6 +91,7 @@ public class Ping extends SugarRecord implements Task {
         return i;
     }
 
+    @Override
     public String getIp() {
         return ip;
     }
@@ -116,8 +113,8 @@ public class Ping extends SugarRecord implements Task {
 
     public Ping() { }
 
-    // modified stackoveflow code
     /**
+     * // modified stackoveflow code
      * Ping a host and return an int value of 0 or 1 or 2 0=success, 1=fail, 2=error
      *
      * Does not work in Android emulator and also delay by '1' second if host not pingable
@@ -134,7 +131,6 @@ public class Ping extends SugarRecord implements Task {
     }
 
     public static final int numberOfPings = 5;
-
     public PingLog ping() throws IOException, InterruptedException {
         StringBuffer echo = new StringBuffer();
         Runtime runtime = Runtime.getRuntime();
@@ -192,7 +188,7 @@ public class Ping extends SugarRecord implements Task {
      *
      * @param s
      */
-    public PingLog getPingLog(String s) {
+    private PingLog getPingLog(String s) {
         //  TODO strings/localization
         PingLog log = new PingLog(this);
         log.setTransmitted(numberOfPings);
@@ -234,10 +230,24 @@ public class Ping extends SugarRecord implements Task {
         }
         return log;
     }
-}
 
-class PingViewHolder {
-    TextView ipView;
-    RelativeLayout element;
-    ImageView img;
+    @Override
+    public long countSuccessfulLogs() {
+        return PingLog.count(PingLog.class, "task_parent = ? AND state = ?",
+                new String[]{Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.SUCCESS)),
+                        this.getId().toString()});
+    }
+
+    @Override
+    public long countAllLogs() {
+        return PingLog.count(PingLog.class, "task_parent = ?",
+                new String[]{this.getId().toString()});
+    }
+
+    class PingViewHolder {
+        IpDisplayer ip;
+        PercentageDisplayer percentage;
+        RelativeLayout element;
+        StatusDisplayer img;
+    }
 }
