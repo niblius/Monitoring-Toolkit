@@ -18,7 +18,7 @@ public class CreateTaskDialog extends DialogFragment {
         builder.setTitle(R.string.what_type_of_task)
                 .setItems(R.array.tasks_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        Intent i;
+                        Intent i = null;
                         Context context = ((Dialog) dialog).getContext();
                         switch (which) {
                             case 0:
@@ -28,9 +28,11 @@ public class CreateTaskDialog extends DialogFragment {
                                 i = new Intent(context, CreatePingActivity.class);
                                 break;
                             default:
-                                i = new Intent(context, MainActivity.class);
+                                // i = new Intent(context, MainActivity.class);
+                                break;
                         }
-                        startActivity(i);
+                        if (i != null)
+                            startActivity(i);
                     }
                 });
         return builder.create();

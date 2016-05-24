@@ -16,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 // TODO If no logs "logs will be here"
+// TODO view holders
 public class PingLogsAdapter extends ArrayAdapter<PingLog> {
     private int layoutResourceId;
 

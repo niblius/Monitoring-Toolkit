@@ -11,14 +11,16 @@ import java.util.List;
 
 
 public class TasksAdapter extends ArrayAdapter<Task> {
+    private Context cont;
     TasksAdapter(Context context, List<Task> tasks) {
         super(context, 0, tasks);
+        cont = context;
     }
 
     // returns number of types of tasks
     @Override
     public int getViewTypeCount() {
-        return 2;
+        return cont.getResources().getStringArray(R.array.tasks_array).length;
     }
 
     @Override

@@ -25,7 +25,6 @@
     <string-array name="tasks_array">
         <item>Ping specific port</item>
         <item>Ping</item>
-        <item>Check log</item>
     </string-array>
 
     <string name="preference_main">com.slaruva.sollertiamonitoring.PREFERENCE_MAIN</string>
