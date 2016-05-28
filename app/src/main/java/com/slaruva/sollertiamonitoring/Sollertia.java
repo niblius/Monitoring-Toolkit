@@ -1,10 +1,19 @@
 package com.slaruva.sollertiamonitoring;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Environment;
 import android.util.Log;
 
 import com.orm.SugarContext;
+import com.orm.SugarDb;
+import com.orm.util.SugarConfig;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.channels.FileChannel;
 
 /**
  * Performs basic initialization of:

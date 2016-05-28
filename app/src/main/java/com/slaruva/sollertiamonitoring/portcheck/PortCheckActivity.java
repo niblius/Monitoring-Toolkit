@@ -59,6 +59,11 @@ public class PortCheckActivity extends TaskScrollableActivity<PortCheck, PortChe
         clearAndUpdateAdapter();
     }
 
+    @Override
+    protected int getLogsLayoutID() {
+        return R.layout.row_port_check_log;
+    }
+
     public void onSave(View v) {
         // TODO validations in activities
         EditText ip = (EditText) findViewById(R.id.ip);

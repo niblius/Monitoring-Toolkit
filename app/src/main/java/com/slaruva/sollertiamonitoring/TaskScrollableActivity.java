@@ -41,6 +41,8 @@ public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L ext
     protected abstract Class _getTaskClass();
     protected abstract ArrayAdapter<L> createAdapter(Context context, int layoutResourceId,
                                                      List<L> logs);
+    protected abstract int getLogsLayoutID();
+
 
     protected void errorVisibilityOn() {
         TextView err = (TextView) findViewById(R.id.error_view);
@@ -64,9 +66,14 @@ public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L ext
 
         List<L> logs = getFirstPageLogsNewestFirst();
         ListView logList = (ListView)findViewById(R.id.log_list);
-        adapter = createAdapter(this, R.layout.row_ping_log, logs);
+        adapter = createAdapter(this, getLogsLayoutID(), logs);
         logList.setAdapter(adapter);
         logList.setOnScrollListener(this);
+
+        if (logs.size() == 0) {
+            TextView no_logs = (TextView) findViewById(R.id.no_logs_message);
+            no_logs.setVisibility(View.VISIBLE);
+        }
 
         initToolbar(task.getIp());
     }
@@ -158,16 +165,37 @@ public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L ext
 
     public void onClearLogs(MenuItem item) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        SureDialogListener listener = new SureDialogListener();
-        builder.setMessage(R.string.are_you_sure).setPositiveButton(R.string.yes, listener)
+        SureDeleteLogsDialogListener listener = new SureDeleteLogsDialogListener();
+        builder.setMessage(R.string.are_you_sure_clear_logs).setPositiveButton(R.string.yes, listener)
                 .setNegativeButton(R.string.no, listener).show();
     }
 
-    private class SureDialogListener implements DialogInterface.OnClickListener {
+    private class SureDeleteLogsDialogListener implements DialogInterface.OnClickListener {
         @Override
         public void onClick(DialogInterface dialog, int which) {
             if (which == DialogInterface.BUTTON_POSITIVE)
                 onDeleteLogs();
         }
+    }
+
+    public void onDelete(View v) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        SureDeleteTaskDialogListener listener = new SureDeleteTaskDialogListener();
+        builder.setMessage(R.string.are_you_sure_delete_task).setPositiveButton(R.string.yes, listener)
+                .setNegativeButton(R.string.no, listener).show();
+    }
+
+    private class SureDeleteTaskDialogListener implements DialogInterface.OnClickListener {
+        @Override
+        public void onClick(DialogInterface dialog, int which) {
+            if (which == DialogInterface.BUTTON_POSITIVE)
+                onDeleteTask();
+        }
+    }
+
+    protected void onDeleteTask() {
+        L.deleteAll(_getLogClass(), "task_parent = ?", "" + tId);
+        SugarRecord.delete(task);
+        this.finish();
     }
 }

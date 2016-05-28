@@ -48,6 +48,11 @@ public class PingActivity extends TaskScrollableActivity<Ping, PingLog> {
         clearAndUpdateAdapter();
     }
 
+    @Override
+    protected int getLogsLayoutID() {
+        return R.layout.row_ping_log;
+    }
+
     public void onSave(View v) {
         EditText ip = (EditText) findViewById(R.id.ip);
         if (!ping.setIp(ip.getText().toString())) {
@@ -56,11 +61,5 @@ public class PingActivity extends TaskScrollableActivity<Ping, PingLog> {
         }
         errorVisibilityOff();
         ping.save();
-    }
-
-    public void onDelete(View v) {
-        PingLog.deleteAll(PingLog.class, "task_parent = ?", "" + ping.getId());
-        ping.delete();
-        this.finish();
     }
 }

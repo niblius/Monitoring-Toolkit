@@ -44,13 +44,52 @@
             </LinearLayout>
 
             <include layout="@layout/savable_and_deletable"/>
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:paddingStart="5dip"
+            android:paddingLeft="5dip"
+            android:paddingEnd="5dip"
+            android:paddingRight="5dip">
+            <TableRow>
+                <TextView
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/minPing"
+                    android:gravity="center"/>
 
-            <ListView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:padding="5sp"
-                android:id="@+id/log_list" />
+                <TextView
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/maxPing"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/avgPing"
+                    android:gravity="center"/>
+
+                <TextView
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/lossPing"
+                    android:gravity="center"/>
+            </TableRow>
+        </TableLayout>
+
+        <include layout="@layout/no_logs_message"/>
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="5dip"
+            android:id="@+id/log_list" />
 
         </LinearLayout>
-
 </LinearLayout>

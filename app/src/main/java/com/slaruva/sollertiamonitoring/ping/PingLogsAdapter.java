@@ -1,5 +1,6 @@
 package com.slaruva.sollertiamonitoring.ping;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -26,8 +27,9 @@ public class PingLogsAdapter extends ArrayAdapter<PingLog> {
     }
 
     private static final SimpleDateFormat StandardFormat =
-            new SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US);
+            new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a", Locale.US);
     @Override
+    @SuppressLint("DefaultLocale")
     public View getView(int position, View convertView, ViewGroup parent) {
         if(convertView == null) {
             LayoutInflater inflater = (LayoutInflater)parent.getContext()
@@ -37,32 +39,25 @@ public class PingLogsAdapter extends ArrayAdapter<PingLog> {
 
         PingLog log = getItem(position);
 
-        TextView body = (TextView)convertView.findViewById(R.id.log_body);
-        body.setText(log.getResponse());
         TextView date = (TextView)convertView.findViewById(R.id.log_date);
         date.setText(log.getDatetime(StandardFormat));
         TextView min = (TextView)convertView.findViewById(R.id.min);
-        min.setText("" + log.getMin());
+        min.setText(String.format("%.1f", log.getMin()));
         TextView max = (TextView)convertView.findViewById(R.id.max);
-        max.setText("" + log.getMax());
+        max.setText(String.format("%.1f", log.getMax()));
         TextView avg = (TextView)convertView.findViewById(R.id.avg);
-        avg.setText("" + log.getAvg());
+        avg.setText(String.format("%.1f", log.getAvg()));
         TextView mdev = (TextView)convertView.findViewById(R.id.mdev);
-        mdev.setText("" + log.getMdev());
+        mdev.setText(String.format("%.1f", log.getMdev()));
         TextView loss = (TextView)convertView.findViewById(R.id.loss);
-        loss.setText("" + log.getLoss());
+        loss.setText(String.format("%d", log.getLoss()));
         TextView received = (TextView)convertView.findViewById(R.id.received);
-        received.setText("" + log.getReceived());
+        received.setText(String.format("%d", log.getReceived()));
         TextView transmitted = (TextView)convertView.findViewById(R.id.transmitted);
-        transmitted.setText("" + log.getTransmitted());
+        transmitted.setText(String.format("%d", log.getTransmitted()));
 
         LinearLayout element = (LinearLayout)convertView.findViewById(R.id.element);
-        if (log.getState() == SimpleLog.State.SUCCESS)
-            element.setBackgroundColor(Color.GREEN);
-        else if (log.getState() == SimpleLog.State.FAIL)
-            element.setBackgroundColor(Color.RED);
-        else if (log.getState() == SimpleLog.State.PARTIAL_SUCCESS)
-            element.setBackgroundColor(Color.YELLOW);
+        SimpleLog.State.toColor(log.getState(), element);
 
         return convertView;
     }

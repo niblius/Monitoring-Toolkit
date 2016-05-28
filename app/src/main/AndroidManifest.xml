@@ -13,7 +13,6 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.Light.NoActionBar">
-
         <receiver
             android:name=".InitializingBootReceiver"
             android:enabled="true"
@@ -51,7 +50,7 @@
             android:value="sollertiamonitoring.db" />
         <meta-data
             android:name="VERSION"
-            android:value="18" />
+            android:value="21" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />

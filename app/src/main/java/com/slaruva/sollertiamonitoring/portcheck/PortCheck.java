@@ -4,6 +4,7 @@ package com.slaruva.sollertiamonitoring.portcheck;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,10 @@ import java.io.IOException;
 import java.net.ConnectException;
 import java.net.UnknownHostException;
 import java.security.InvalidParameterException;
+import java.util.Date;
 import java.util.List;
+
+import static java.lang.Math.abs;
 
 /**
  * PortCheck is a task that pings specific port of given server and logs response.
@@ -36,13 +40,18 @@ import java.util.List;
 public class PortCheck extends SugarRecord implements Task {
     private String ip;
     private int port;
+    public static final String TAG = "PortCheck";
 
     //  for performance we use one TelnetClient instance for all
     //  PortChecks in single thread
     private static final ThreadLocal<TelnetClient> client =
             new ThreadLocal<TelnetClient>() {
                 @Override
-                protected TelnetClient initialValue() { return new TelnetClient(); }
+                protected TelnetClient initialValue() {
+                    TelnetClient telnet = new TelnetClient();
+                    telnet.setDefaultTimeout(50000);
+                    return telnet;
+                }
             };
 
     @Override
@@ -51,27 +60,80 @@ public class PortCheck extends SugarRecord implements Task {
         log.save();
     }
 
+    private static int NUMBER_OF_TRIES = 2;
     /**
      * Performs connection to the server and analyzes response
      * @param context current context
      * @return Resource strings that correspond to: success, error, fail or unknown_host
      */
     private PortCheckLog getPortResponse(Context context) {
-        try {
-            client.get().connect(ip, port);
-            client.get().disconnect();
-        } catch (ConnectException ce) {
-            return new PortCheckLog(context.getString(R.string.fail),
-                    this, SimpleLog.State.FAIL);
-        } catch (UnknownHostException e) {
-            return new PortCheckLog(context.getString(R.string.unknown_host),
-                    this, SimpleLog.State.FAIL);
-        } catch (IOException e) {
-            return new PortCheckLog(context.getString(R.string.error),
-                    this, SimpleLog.State.FAIL);
+        boolean[] results = new boolean[NUMBER_OF_TRIES];
+        double [] delays = new double[NUMBER_OF_TRIES];
+        double min = Integer.MAX_VALUE, max = 0, avg = 0;
+        int received = 0;
+        long beginning;
+        Log.i(TAG, "1");
+        for(int i = 0; i < NUMBER_OF_TRIES; i++) {
+            beginning = System.nanoTime();
+            try {
+                Log.i(TAG, "2");
+                client.get().connect(ip, port);
+                Log.i(TAG, "3");
+                client.get().disconnect();
+                Log.i(TAG, "4");
+            } catch (IOException e) {
+                Log.i(TAG, "5");
+                delays[i] = (int) (System.currentTimeMillis() - beginning);
+                results[i] = false;
+                Log.i(TAG, "catch");
+                Log.i(TAG, "6");
+                continue;
+            }
+            Log.i(TAG, "7");
+            Log.i(TAG, "notcatch");
+            delays[i] = (double) (System.nanoTime() - beginning) / 1000000.d;
+            results[i] = true;
+            received++;
         }
-        return new PortCheckLog(context.getString(R.string.success),
-                this, SimpleLog.State.SUCCESS);
+        Log.i(TAG, "8");
+        for(int i = 0; i < NUMBER_OF_TRIES; i++) {
+            if (results[i]) {
+                double current = delays[i];
+                avg += current;
+                if (current < min)
+                    min = current;
+                if (current > max)
+                    max = current;
+            }
+        }
+        avg /= NUMBER_OF_TRIES;
+
+        SimpleLog.State state = SimpleLog.State.NOTHING;
+        for (boolean res : results)
+        {
+            if (res) {
+                if (state == SimpleLog.State.NOTHING)
+                    state = SimpleLog.State.SUCCESS;
+                else if (state == SimpleLog.State.FAIL)
+                    state = SimpleLog.State.PARTIAL_SUCCESS;
+            } else {
+                if (state == SimpleLog.State.NOTHING)
+                    state = SimpleLog.State.FAIL;
+                else if (state == SimpleLog.State.SUCCESS)
+                    state = SimpleLog.State.PARTIAL_SUCCESS;
+            }
+        }
+
+        PortCheckLog log = new PortCheckLog(SimpleLog.State.toString(state, context), this, state);
+
+        log.setState(state);
+        log.setAvg(avg);
+        log.setMax(max);
+        log.setMin(min);
+        log.setReceived(received);
+        log.setTransmitted(NUMBER_OF_TRIES);
+
+        return log;
     }
 
     @SuppressLint("DefaultLocale")
@@ -169,8 +231,9 @@ public class PortCheck extends SugarRecord implements Task {
 
     @Override
     public long countSuccessfulLogs() {
-        return PortCheckLog.count(PortCheckLog.class, "task_parent = ? AND state = ?",
-                new String[]{Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.SUCCESS)),
+        return PortCheckLog.count(PortCheckLog.class, "task_parent = ? AND (state = ? OR state = ?)",
+        new String[]{Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.SUCCESS)),
+                        Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.PARTIAL_SUCCESS)),
                         this.getId().toString()});
     }
 
