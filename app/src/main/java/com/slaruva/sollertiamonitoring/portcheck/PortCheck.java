@@ -60,6 +60,8 @@ public class PortCheck extends SugarRecord implements Task {
         log.save();
     }
 
+
+    // TODO delete debugging below
     private static int NUMBER_OF_TRIES = 2;
     /**
      * Performs connection to the server and analyzes response
@@ -69,7 +71,7 @@ public class PortCheck extends SugarRecord implements Task {
     private PortCheckLog getPortResponse(Context context) {
         boolean[] results = new boolean[NUMBER_OF_TRIES];
         double [] delays = new double[NUMBER_OF_TRIES];
-        double min = Integer.MAX_VALUE, max = 0, avg = 0;
+        double min = Double.MAX_VALUE, max = 0d, avg = 0d;
         int received = 0;
         long beginning;
         Log.i(TAG, "1");
@@ -232,9 +234,8 @@ public class PortCheck extends SugarRecord implements Task {
     @Override
     public long countSuccessfulLogs() {
         return PortCheckLog.count(PortCheckLog.class, "task_parent = ? AND (state = ? OR state = ?)",
-        new String[]{Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.SUCCESS)),
-                        Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.PARTIAL_SUCCESS)),
-                        this.getId().toString()});
+        new String[]{this.getId().toString(), Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.SUCCESS)),
+                        Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.PARTIAL_SUCCESS))});
     }
 
     @Override

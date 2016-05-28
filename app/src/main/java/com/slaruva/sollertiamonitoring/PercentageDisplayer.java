@@ -12,8 +12,7 @@ public class PercentageDisplayer implements Displayer{
     @SuppressLint("DefaultLocale")
     @Override
     public void updateView(Task t) {
-        Log.i(TAG, "successful: " + t.countSuccessfulLogs() + " of " + t.countAllLogs());
-        percentage.setText(String.format("%.1f", 100.d*t.countSuccessfulLogs()/t.countAllLogs()));
+        percentage.setText(String.format("%.1f", 100.d*t.countSuccessfulLogs()/(double)t.countAllLogs()));
     }
 
     public PercentageDisplayer(LinearLayout layout) {

@@ -234,9 +234,8 @@ public class Ping extends SugarRecord implements Task {
     @Override
     public long countSuccessfulLogs() {
         return PingLog.count(PingLog.class, "task_parent = ? AND (state = ? OR state = ?)",
-                new String[]{Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.SUCCESS)),
-                        Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.PARTIAL_SUCCESS)),
-                        this.getId().toString()});
+                new String[]{this.getId().toString(), Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.SUCCESS)),
+                        Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.PARTIAL_SUCCESS))});
     }
 
     @Override
