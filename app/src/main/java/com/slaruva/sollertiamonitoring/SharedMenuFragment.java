@@ -29,12 +29,6 @@ public class SharedMenuFragment extends Fragment {
             case R.id.faq:
                 onFAQ(item);
                 return true;
-            case R.id.about:
-                onAbout(item);
-                return true;
-            case R.id.turnonoff:
-                onTurnOnOff(item);
-                return true;
             case R.id.settings:
                 onSettings(item);
                 return true;
@@ -44,14 +38,6 @@ public class SharedMenuFragment extends Fragment {
     }
 
     public void onFAQ(MenuItem item) {
-
-    }
-
-    public void onAbout(MenuItem item) {
-
-    }
-
-    public void onTurnOnOff(MenuItem item) {
 
     }
 

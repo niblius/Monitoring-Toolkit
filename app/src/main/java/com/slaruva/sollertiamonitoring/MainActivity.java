@@ -92,6 +92,7 @@ public class MainActivity extends AppCompatActivity {
         MenuItem mi = menu.findItem(R.id.on_off_switch_item);
         View v = mi.getActionView();
         Switch on_off = (Switch) v.findViewById(R.id.switchForToolbar);
+        on_off.setChecked(TaskManagerService.isServiceOn(getApplicationContext()));
         on_off.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -105,6 +106,8 @@ public class MainActivity extends AppCompatActivity {
                         getString((isChecked) ? R.string.task_execution_on : R.string.task_execution_off),
                         Toast.LENGTH_SHORT);
                 t.show();
+
+                TaskManagerService.setService(isChecked, context);
             }
         });
         return true;

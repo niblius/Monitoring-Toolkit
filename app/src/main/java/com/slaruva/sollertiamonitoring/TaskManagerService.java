@@ -5,6 +5,7 @@ import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.nfc.Tag;
 import android.util.Log;
 
@@ -98,5 +99,20 @@ public class TaskManagerService extends IntentService {
             return false;
         }
         return true;
+    }
+
+    public static final String SERVICE_STATE = "SERVICE_STATE";
+    public static boolean isServiceOn(Context cont) {
+        return cont
+                .getSharedPreferences(cont.getString(R.string.preference_main), MODE_PRIVATE)
+                .getBoolean(SERVICE_STATE, Boolean.TRUE);
+    }
+
+    public static void setService(boolean val, Context cont) {
+        SharedPreferences sharedPref = cont.getSharedPreferences(
+                cont.getString(R.string.preference_main), MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(SERVICE_STATE, val);
+        editor.apply();
     }
 }

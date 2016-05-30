@@ -14,7 +14,8 @@ public class InitializingBootReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         Log.i(TAG, "On boot received...");
-        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")) {
+        if (intent.getAction().equals("android.intent.action.BOOT_COMPLETED")
+                && TaskManagerService.isServiceOn(context)) {
             TaskManagerService.setAlarm(context);
         }
     }

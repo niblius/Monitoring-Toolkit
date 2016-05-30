@@ -7,15 +7,7 @@
         android:icon="@drawable/settings"
         app:showAsAction="ifRoom"/>
     <item
-        android:id="@+id/about"
-        android:title="@string/about"
-        app:showAsAction="never"/>
-    <item
         android:id="@+id/faq"
         android:title="@string/faq"
-        app:showAsAction="never"/>
-    <item
-        android:id="@+id/turnonoff"
-        android:title="@string/turnonoff"
         app:showAsAction="never"/>
 </menu>
