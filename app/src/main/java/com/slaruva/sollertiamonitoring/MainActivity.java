@@ -20,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.CompoundButton;
 import android.widget.ListView;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import java.util.List;
 import java.util.Vector;
@@ -99,6 +100,11 @@ public class MainActivity extends AppCompatActivity {
                     TaskManagerService.setAlarm(context);
                 else
                     TaskManagerService.disableAlarm(context);
+
+                Toast t = Toast.makeText(getApplicationContext(),
+                        getString((isChecked) ? R.string.task_execution_on : R.string.task_execution_off),
+                        Toast.LENGTH_SHORT);
+                t.show();
             }
         });
         return true;
