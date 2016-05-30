@@ -60,8 +60,6 @@ public class PortCheck extends SugarRecord implements Task {
         log.save();
     }
 
-
-    // TODO delete debugging below
     private static int NUMBER_OF_TRIES = 2;
     /**
      * Performs connection to the server and analyzes response
@@ -74,30 +72,20 @@ public class PortCheck extends SugarRecord implements Task {
         double min = Double.MAX_VALUE, max = 0d, avg = 0d;
         int received = 0;
         long beginning;
-        Log.i(TAG, "1");
         for(int i = 0; i < NUMBER_OF_TRIES; i++) {
             beginning = System.nanoTime();
             try {
-                Log.i(TAG, "2");
                 client.get().connect(ip, port);
-                Log.i(TAG, "3");
                 client.get().disconnect();
-                Log.i(TAG, "4");
             } catch (IOException e) {
-                Log.i(TAG, "5");
                 delays[i] = (int) (System.currentTimeMillis() - beginning);
                 results[i] = false;
-                Log.i(TAG, "catch");
-                Log.i(TAG, "6");
                 continue;
             }
-            Log.i(TAG, "7");
-            Log.i(TAG, "notcatch");
             delays[i] = (double) (System.nanoTime() - beginning) / 1000000.d;
             results[i] = true;
             received++;
         }
-        Log.i(TAG, "8");
         for(int i = 0; i < NUMBER_OF_TRIES; i++) {
             if (results[i]) {
                 double current = delays[i];
@@ -131,7 +119,7 @@ public class PortCheck extends SugarRecord implements Task {
         log.setState(state);
         log.setAvg(avg);
         log.setMax(max);
-        log.setMin(min);
+        log.setMin((min == Double.MAX_VALUE) ? 0 : min);
         log.setReceived(received);
         log.setTransmitted(NUMBER_OF_TRIES);
 

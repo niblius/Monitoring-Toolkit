@@ -4,7 +4,9 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -25,14 +27,28 @@ import java.util.logging.Logger;
 public class MainActivity extends AppCompatActivity {
     public static final String TAG = "MainActivity";
 
-    TasksAdapter adapter;
-    ListView taskList;
-
+    class MyRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
+        @Override
+        public void onRefresh() {
+            updateAdapter();
+        }
+    }
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        setUpListView();
+        initToolbar(savedInstanceState);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        mSwipeRefreshLayout.setOnRefreshListener(new MyRefreshListener());
+    }
+
+    private TasksAdapter adapter;
+    private ListView taskList;
+    private void setUpListView() {
         taskList = (ListView)findViewById(R.id.task_list);
         List<Task> tasks = new Vector<>();
         adapter = new TasksAdapter(this, tasks);
@@ -45,23 +61,22 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
-
-        initToolbar();
     }
 
-    Toolbar toolbar;
-    SharedMenuFragment sharedMenu;
-
-    private void initToolbar() {
+    private Toolbar toolbar;
+    private SharedMenuFragment sharedMenu;
+    private void initToolbar(Bundle savedInstanceState) {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.app_name);
         setSupportActionBar(toolbar);
 
-        sharedMenu = new SharedMenuFragment();
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction transaction = fm.beginTransaction();
-        transaction.add(sharedMenu, SharedMenuFragment.TAG);
-        transaction.commit();
+        if(savedInstanceState == null) {
+            sharedMenu = new SharedMenuFragment();
+            FragmentManager fm = getFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction();
+            transaction.add(sharedMenu, SharedMenuFragment.TAG);
+            transaction.commit();
+        }
     }
 
     @Override
@@ -74,16 +89,39 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        //  TODO    ADD ONLY NEW, same with all others adapters
-        adapter.clear();
-        adapter.addAll(TaskManagerService.getAllTasks());
-        adapter.notifyDataSetChanged();
+        updateAdapter();
+    }
+
+    class TasksLoader extends AsyncTask<Integer, Integer, List<Task>> {
+        @Override
+        protected void onPreExecute() {
+            mSwipeRefreshLayout.setRefreshing(true);
+        }
+        @Override
+        protected List<Task> doInBackground(Integer... params) {
+            return TaskManagerService.getAllTasks();
+        }
+        @Override
+        protected void onPostExecute(List<Task> tasks) {
+            adapter.clear();
+            adapter.addAll(tasks);
+            adapter.notifyDataSetChanged();
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+    }
+    private void updateAdapter() {
+        TasksLoader tl = new TasksLoader();
+        tl.execute();
     }
 
     private final static String DIALOG_TAG = "CREATE_NEW_TASK_DIALOG";
-
     public void onCreateNewTask(MenuItem item) {
         DialogFragment df = new CreateTaskDialog();
         df.show(getFragmentManager(), DIALOG_TAG);
+    }
+
+    public void onExecuteAllTasks(MenuItem item) {
+        Intent intent = new Intent(this, TaskManagerService.class);
+        startService(intent);
     }
 }

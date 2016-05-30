@@ -3,17 +3,15 @@ package com.slaruva.sollertiamonitoring.portcheck;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListView;
 
 import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.TaskScrollableActivity;
 
 import java.util.List;
-// TODO ping + portcheck are very similar, copy/paste code fix it!!!
 
 public class PortCheckActivity extends TaskScrollableActivity<PortCheck, PortCheckLog> {
     private PortCheck pc;
@@ -39,7 +37,7 @@ public class PortCheckActivity extends TaskScrollableActivity<PortCheck, PortChe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_port_check);
-        init();
+        init(savedInstanceState);
 
         pc = (PortCheck) task;
 
@@ -54,18 +52,12 @@ public class PortCheckActivity extends TaskScrollableActivity<PortCheck, PortChe
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        clearAndUpdateAdapter();
-    }
-
-    @Override
     protected int getLogsLayoutID() {
         return R.layout.row_port_check_log;
     }
 
-    public void onSave(View v) {
-        // TODO validations in activities
+    @Override
+    public void onSave(MenuItem item) {
         EditText ip = (EditText) findViewById(R.id.ip);
         if (!pc.setIp(ip.getText().toString())) {
             errorVisibilityOn();

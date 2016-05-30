@@ -2,6 +2,7 @@ package com.slaruva.sollertiamonitoring.ping;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
@@ -35,7 +36,7 @@ public class PingActivity extends TaskScrollableActivity<Ping, PingLog> {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ping);
-        init();
+        init(savedInstanceState);
 
         ping = (Ping)task;
 
@@ -43,17 +44,12 @@ public class PingActivity extends TaskScrollableActivity<Ping, PingLog> {
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        clearAndUpdateAdapter();
-    }
-
-    @Override
     protected int getLogsLayoutID() {
         return R.layout.row_ping_log;
     }
 
-    public void onSave(View v) {
+    @Override
+    public void onSave(MenuItem item) {
         EditText ip = (EditText) findViewById(R.id.ip);
         if (!ping.setIp(ip.getText().toString())) {
             errorVisibilityOn();

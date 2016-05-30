@@ -4,16 +4,23 @@ import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Environment;
+import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.orm.SugarContext;
 import com.orm.SugarDb;
 import com.orm.util.SugarConfig;
+import com.slaruva.sollertiamonitoring.ping.Ping;
+import com.slaruva.sollertiamonitoring.ping.PingLog;
+import com.slaruva.sollertiamonitoring.portcheck.PortCheck;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
+import java.text.SimpleDateFormat;
+import java.util.List;
 
 /**
  * Performs basic initialization of:
@@ -22,9 +29,6 @@ import java.nio.channels.FileChannel;
  * greetings dialog
  * sets up alarms first time
  */
-//TODO settings
-//TODO notifications
-//TODO filter
 public class Sollertia extends Application {
     private static final String TAG = "Sollertia";
     private SharedPreferences sharedPref;
@@ -36,12 +40,26 @@ public class Sollertia extends Application {
         SugarContext.init(this);
         setPreferences();
         doFirstTimeRoutine();
+        showLastSessionPopUp();
+    }
+
+    private void showLastSessionPopUp() {
+        List<BridgeServiceToApp> bridges = BridgeServiceToApp.find(BridgeServiceToApp.class,
+                "last_session != 0",
+                new String[]{},
+                null, "id DESC", "1");
+        if(bridges.isEmpty())
+            return;
+        BridgeServiceToApp bridge = bridges.get(0);
+        CharSequence text = getString(R.string.last_session_was) +
+                bridge.getDatetime(new SimpleDateFormat(" dd/MM/yyyy hh:mm a"));
+        Toast t = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+        t.show();
     }
 
     private static final String PREFERENCE_WAS_PREVIOUSLY_STARTED =
             "PREFERENCE_WAS_PREVIOUSLY_STARTED";
     private void doFirstTimeRoutine() {
-        //TODO greetings
         boolean wasStated = sharedPref.getBoolean(
                 PREFERENCE_WAS_PREVIOUSLY_STARTED, Boolean.FALSE);
         if(!wasStated) {
@@ -49,6 +67,10 @@ public class Sollertia extends Application {
             editor.putBoolean(PREFERENCE_WAS_PREVIOUSLY_STARTED, Boolean.TRUE);
             editor.apply();
             TaskManagerService.setAlarm(this);
+            Ping pingExample = new Ping("google.com");
+            pingExample.save();
+            PortCheck pcExample = new PortCheck("github.com", 80);
+            pcExample.save();
         }
     }
 

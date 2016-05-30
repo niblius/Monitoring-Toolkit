@@ -1,4 +1,6 @@
 <resources>
+    <string name="update_all_tasks">Update tasks</string>
+    <string name="last_session_was">Last successful session was</string>
     <string name="your_logs_will_be_here">Your logs will be here.</string>
     <string name="date_column">Date</string>
     <string name="invalid_input">Invalid input</string>

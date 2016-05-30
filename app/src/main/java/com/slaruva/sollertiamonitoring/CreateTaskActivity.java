@@ -2,6 +2,7 @@ package com.slaruva.sollertiamonitoring;
 
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,7 +12,7 @@ public class CreateTaskActivity extends AppCompatActivity {
     protected Toolbar toolbar;
     protected SharedMenuFragment sharedMenu;
 
-    protected void initToolbar() {
+    protected void initToolbar(Bundle savedInstanceState) {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.create_new_task);
         setSupportActionBar(toolbar);

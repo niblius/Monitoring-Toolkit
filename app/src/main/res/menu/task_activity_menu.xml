@@ -2,9 +2,21 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/button_save"
+        app:showAsAction="ifRoom"
+        android:title="@string/save"
+        android:icon="@drawable/save"
+        android:onClick="onSave" />
+    <item
         android:id="@+id/clear_logs"
-        app:showAsAction="always"
+        app:showAsAction="ifRoom"
         android:title="@string/clear_logs"
         android:icon="@drawable/erase"
         android:onClick="onClearLogs" />
+    <item
+        android:id="@+id/button_delete"
+        app:showAsAction="ifRoom"
+        android:title="@string/delete"
+        android:icon="@drawable/trash_can"
+        android:onClick="onDelete" />
 </menu>

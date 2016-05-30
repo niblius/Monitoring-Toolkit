@@ -5,6 +5,9 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,8 +26,6 @@ import com.orm.util.NamingHelper;
 
 import java.util.List;
 
-// TODO notification about invalid input
-
 public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L extends SimpleLog>
         extends AppCompatActivity implements AbsListView.OnScrollListener {
 
@@ -42,6 +43,7 @@ public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L ext
     protected abstract ArrayAdapter<L> createAdapter(Context context, int layoutResourceId,
                                                      List<L> logs);
     protected abstract int getLogsLayoutID();
+    public abstract void onSave(MenuItem item);
 
 
     protected void errorVisibilityOn() {
@@ -59,8 +61,9 @@ public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L ext
         ip.setText(task.getIp());
     }
 
+    private SwipeRefreshLayout mSwipeRefreshLayout;
     @SuppressWarnings("unchecked")
-    protected void init() {
+    protected void init(Bundle savedInstanceState) {
         tId = getIntent().getExtras().getLong(TASK_ID_TAG);
         task = (T)T.findById(_getTaskClass(), tId);
 
@@ -75,23 +78,42 @@ public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L ext
             no_logs.setVisibility(View.VISIBLE);
         }
 
-        initToolbar(task.getIp());
+        initToolbar(task.getIp(), savedInstanceState);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
+        mSwipeRefreshLayout.setOnRefreshListener(getOnRefreshListener());
+    }
+
+    class BasicOnRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
+        @Override
+        public void onRefresh() {
+            clearAndUpdateAdapter();
+        }
+    }
+    protected SwipeRefreshLayout.OnRefreshListener getOnRefreshListener() {
+        return new BasicOnRefreshListener();
     }
 
     @SuppressWarnings("unchecked")
     protected List<L> getFirstPageLogsNewestFirst() {
-        return SugarRecord.find(_getLogClass(), "task_parent = ? ORDER BY id DESC LIMIT ?",
-                Long.toString(tId), Integer.toString(PAGE_SIZE));
+        return getLogs(0, PAGE_SIZE);
+    }
+    /**
+     * Returns logs followed by the last shown in adapter, sorted by date
+     */
+    @SuppressWarnings("unchecked")
+    protected List<L> getLogsNewestFirst() {
+        return getLogs(adapter.getCount(), PAGE_SIZE);
     }
 
     @SuppressWarnings("unchecked")
-    protected List<L> getLogsNewestFirst() {
+    protected List<L> getLogs(long from, long how_many) {
         return SugarRecord.findWithQuery(_getLogClass(),
                 "SELECT * FROM " + NamingHelper.toSQLName(_getLogClass()) +
                         " WHERE task_parent = ? " + "ORDER BY id DESC LIMIT ? " +
                         "OFFSET ?",
-                Long.toString(tId), Integer.toString(PAGE_SIZE),
-                Long.toString(adapter.getCount()));
+                Long.toString(tId), Long.toString(how_many),
+                Long.toString(from));
     }
 
     public void onDeleteLogs() {
@@ -101,20 +123,33 @@ public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L ext
     }
 
     @SuppressWarnings("unchecked")
-    protected void clearAndUpdateAdapter() {
-        List<L> newLogs = L.find((_getLogClass()), "task_parent = ?",
-                new String[]{Long.toString(tId)},
-                null, "id DESC", "" + adapter.getCount());
-        adapter.clear();
-        adapter.addAll(newLogs);
-        adapter.notifyDataSetChanged();
+    protected void clearAndUpdateAdapter() {;
+        AsyncTask<Integer, Integer, List<L>> async = new AsyncTask<Integer, Integer, List<L>>() {
+            @Override
+            protected void onPreExecute() {
+                mSwipeRefreshLayout.setRefreshing(true);
+            }
+            @Override
+            protected List<L> doInBackground(Integer... params) {
+                return getLogs(0, adapter.getCount());
+            }
+            @Override
+            protected void onPostExecute(List<L> updatedLogs) {
+                adapter.clear();
+                adapter.addAll(updatedLogs);
+                adapter.notifyDataSetChanged();
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
+        };
+
+        async.execute();
     }
 
     @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) { }
 
-    int lastItemNumb = 0;
-    int preLastItemNumb = 0;
+    private int lastItemNumb = 0;
+    private int preLastItemNumb = 0;
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem,
                          int visibleItemCount, int totalItemCount) {
@@ -127,7 +162,7 @@ public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L ext
         }
     }
 
-    protected void initToolbar(String title) {
+    protected void initToolbar(String title, Bundle savedInstanceState) {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle(title);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
@@ -149,11 +184,13 @@ public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L ext
             }
         });
 
-        sharedMenu = new SharedMenuFragment();
-        FragmentManager fm = getFragmentManager();
-        FragmentTransaction transaction = fm.beginTransaction();
-        transaction.add(sharedMenu, SharedMenuFragment.TAG);
-        transaction.commit();
+        if(savedInstanceState == null) {
+            sharedMenu = new SharedMenuFragment();
+            FragmentManager fm = getFragmentManager();
+            FragmentTransaction transaction = fm.beginTransaction();
+            transaction.add(sharedMenu, SharedMenuFragment.TAG);
+            transaction.commit();
+        }
     }
 
     @Override
@@ -178,7 +215,7 @@ public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L ext
         }
     }
 
-    public void onDelete(View v) {
+    public void onDelete(MenuItem item) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         SureDeleteTaskDialogListener listener = new SureDeleteTaskDialogListener();
         builder.setMessage(R.string.are_you_sure_delete_task).setPositiveButton(R.string.yes, listener)
@@ -197,5 +234,11 @@ public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L ext
         L.deleteAll(_getLogClass(), "task_parent = ?", "" + tId);
         SugarRecord.delete(task);
         this.finish();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        clearAndUpdateAdapter();
     }
 }

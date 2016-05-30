@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <include layout="@layout/toolbar"/>
     <include layout="@layout/error"/>
@@ -28,7 +29,7 @@
                 android:maxLines="1"/>
 
         </LinearLayout>
-        <include layout="@layout/savable_and_deletable"/>
+
         <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -85,10 +86,16 @@
 
         <include layout="@layout/no_logs_message"/>
 
-        <ListView
+        <android.support.v4.widget.SwipeRefreshLayout
+            android:id="@+id/swiperefresh"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/log_list"
-            android:padding="5dip" />
+            android:layout_height="match_parent">
+            <ListView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/log_list"
+                android:padding="5dip" />
+        </android.support.v4.widget.SwipeRefreshLayout>
+
     </LinearLayout>
 </LinearLayout>

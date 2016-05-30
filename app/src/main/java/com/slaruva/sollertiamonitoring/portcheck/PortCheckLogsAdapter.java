@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 
-// TODO delete all SuppressLint("DefaultLocale")
+// TODO trash_can all SuppressLint("DefaultLocale") and make normal l18n
 
 public class PortCheckLogsAdapter extends ArrayAdapter<PortCheckLog> {
     private int layoutResourceId;
@@ -28,7 +28,7 @@ public class PortCheckLogsAdapter extends ArrayAdapter<PortCheckLog> {
     }
 
     private static final SimpleDateFormat StandardFormat =
-            new SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US);
+            new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a", Locale.US);
     @Override
     @SuppressLint("DefaultLocale")
     public View getView(int position, View convertView, ViewGroup parent) {

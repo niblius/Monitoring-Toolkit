@@ -77,7 +77,7 @@ public class PortCheckLog extends SimpleLog {
         setState(succeeded);
         this.response = response;
         this.taskParent = task;
-        datetime = Calendar.getInstance().getTimeInMillis();    //TODO i'm not sure about zones...
+        datetime = Calendar.getInstance().getTimeInMillis();
     }
 
     public PortCheck getTaskParent() {

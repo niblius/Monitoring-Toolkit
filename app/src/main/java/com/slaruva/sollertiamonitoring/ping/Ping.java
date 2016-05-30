@@ -27,8 +27,6 @@ import java.io.InputStreamReader;
 import java.security.InvalidParameterException;
 import java.util.List;
 
-
-// TODO add specific options (all ping flags)
 public class Ping extends SugarRecord implements Task {
     //todo add ping time, %loss and so on
     private String ip;
@@ -189,7 +187,6 @@ public class Ping extends SugarRecord implements Task {
      * @param s
      */
     private PingLog getPingLog(String s) {
-        //  TODO strings/localization
         PingLog log = new PingLog(this);
         log.setTransmitted(numberOfPings);
         if (s.contains(" 100% packet loss")) {

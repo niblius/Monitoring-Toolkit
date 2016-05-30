@@ -11,8 +11,6 @@ import com.slaruva.sollertiamonitoring.CreateTaskActivity;
 import com.slaruva.sollertiamonitoring.R;
 
 
-//TODO validation
-
 /**
  * Activity responsible for creating new tasks of type: PortCheck
  */
@@ -23,7 +21,7 @@ public class CreatePortCheckActivity extends CreateTaskActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_port_check);
 
-        initToolbar();
+        initToolbar(savedInstanceState);
     }
 
     /**

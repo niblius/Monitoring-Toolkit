@@ -16,7 +16,7 @@ public class CreatePingActivity extends CreateTaskActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_ping);
 
-        initToolbar();
+        initToolbar(savedInstanceState);
     }
 
     /**
