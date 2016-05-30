@@ -2,11 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/on_off_switch_item"
+        android:title=""
+        app:showAsAction="always"
+        app:actionLayout="@layout/toolbar_switch"/>
+    <item
         android:id="@+id/add_task"
         app:showAsAction="ifRoom"
         android:title="@string/create_new_task"
         android:icon="@drawable/plus"
-        android:onClick="onCreateNewTask" />
+        android:onClick="onCreateNewTask"/>
     <item
         android:id="@+id/refresh"
         android:title="@string/update_all_tasks"

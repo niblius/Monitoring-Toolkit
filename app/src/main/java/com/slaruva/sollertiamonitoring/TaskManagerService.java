@@ -45,6 +45,14 @@ public class TaskManagerService extends IntentService {
                 10000, 60000, pi);
     }
 
+    public static void disableAlarm(Context context) {
+        Log.d(TAG, "Disabling alarm...");
+        AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        Intent intent = new Intent(context, TaskManagerService.class);
+        PendingIntent pi = PendingIntent.getService(context, ALARM_ID, intent, 0);
+        am.cancel(pi);
+    }
+
     /**
      * Retrieves all available tasks of all types and adds them into
      * a single vector.
