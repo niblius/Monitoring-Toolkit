@@ -1,6 +1,7 @@
 package com.slaruva.sollertiamonitoring;
 
 import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -9,6 +10,11 @@ import android.view.MenuItem;
 
 public class SharedMenuFragment extends Fragment {
     static final String TAG = "SharedMenuFragment";
+    private boolean showSettingsButton = true;
+
+    public void setSettingsButtonNotVisible() {
+        showSettingsButton = false;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -20,6 +26,10 @@ public class SharedMenuFragment extends Fragment {
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.shared_menu, menu);
+        if(!showSettingsButton) {
+            MenuItem settings = menu.findItem(R.id.settings);
+            settings.setVisible(false);
+        }
     }
 
     @Override
@@ -42,6 +52,7 @@ public class SharedMenuFragment extends Fragment {
     }
 
     public void onSettings(MenuItem item) {
-
+        Intent i = new Intent(getActivity().getApplicationContext(), SettingsActivity.class);
+        startActivity(i);
     }
 }

@@ -4,6 +4,8 @@ package com.slaruva.sollertiamonitoring.portcheck;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,18 +57,29 @@ public class PortCheck extends SugarRecord implements Task {
             };
 
     @Override
-    public void execute(Context context) {
+    public boolean execute(Context context) {
         PortCheckLog log = getPortResponse(context);
         log.save();
+        if(log.getState() == SimpleLog.State.FAIL)
+            return false;
+        return true;
     }
 
-    private static int NUMBER_OF_TRIES = 2;
+    private SharedPreferences sharedPreferences;
+
+    public int getNumberOfTries(Context c) {
+        if(sharedPreferences == null)
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(c);
+        return sharedPreferences.getInt("pref_ping_tries", 2);
+    }
+
     /**
      * Performs connection to the server and analyzes response
      * @param context current context
      * @return Resource strings that correspond to: success, error, fail or unknown_host
      */
     private PortCheckLog getPortResponse(Context context) {
+        int NUMBER_OF_TRIES = getNumberOfTries(context);
         boolean[] results = new boolean[NUMBER_OF_TRIES];
         double [] delays = new double[NUMBER_OF_TRIES];
         double min = Double.MAX_VALUE, max = 0d, avg = 0d;

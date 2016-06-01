@@ -14,7 +14,7 @@ public interface Task {
      * Performs execution of the task
      * @param context current context
      */
-    public void execute(Context context);
+    public boolean execute(Context context);
 
     /**
      * Represents the task (briefly) in View object

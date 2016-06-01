@@ -1,4 +1,11 @@
 <resources>
+    <string name="show_notifications">Show notifications</string>
+    <string name="set_number_of_tries_for_ping_explanation">Set number of tries for tasks of \"ping\" type.</string>
+    <string name="set_number_of_tries_for_portcheck_explanation">Set number of tries for tasks of \"checking port\" type.</string>
+    <string name="how_often_execute">How often should tasks be executed?</string>
+    <string name="set_number_of_tries_for_ping">Number of tries for \"ping\"</string>
+    <string name="set_number_of_tries_for_portcheck">Numebr of tries for \"portcheck\"</string>
+    <string name="failed_execution_notification_text">Execution of one or more tasks failed.</string>
     <string name="task_execution_on">Task execution is on.</string>
     <string name="task_execution_off">Task execution is off.</string>
     <string name="update_all_tasks">Update tasks</string>
@@ -33,6 +40,22 @@
     <string-array name="tasks_array">
         <item>Ping specific port</item>
         <item>Ping</item>
+    </string-array>
+
+
+    <string-array name="time_periods">
+        <item>Every fifteen minutes</item>
+        <item>Every half-hour</item>
+        <item>Every hour</item>
+        <item>Every half-day</item>
+        <item>Every day</item>
+    </string-array>
+    <string-array name="time_periods_keys">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
     </string-array>
 
     <string name="preference_main">com.slaruva.sollertiamonitoring.PREFERENCE_MAIN</string>

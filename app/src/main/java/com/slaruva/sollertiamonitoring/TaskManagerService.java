@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.nfc.Tag;
+import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.slaruva.sollertiamonitoring.ping.Ping;
@@ -27,6 +28,28 @@ public class TaskManagerService extends IntentService {
         super("TaskManagerService");
     }
 
+    public static long getInterval(Context c) {
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(c);
+        int key = sharedPreferences.getInt("pref_portcheck_tries", 2);
+        switch(key) {
+            case 0:
+                return AlarmManager.INTERVAL_FIFTEEN_MINUTES;
+            case 1:
+                return AlarmManager.INTERVAL_HALF_HOUR;
+            case 2:
+                return AlarmManager.INTERVAL_HOUR;
+            case 3:
+                return AlarmManager.INTERVAL_HALF_DAY;
+            default:
+                return AlarmManager.INTERVAL_DAY;
+        }
+    }
+
+    public boolean showNotifications(Context c) {
+        return PreferenceManager.getDefaultSharedPreferences(c)
+                .getBoolean("pref_show_notifications", true);
+    }
+
     /**
      * Sets up AlarmManager
      *
@@ -38,12 +61,8 @@ public class TaskManagerService extends IntentService {
         Intent intent = new Intent(context, TaskManagerService.class);
         PendingIntent pi = PendingIntent.getService(context, ALARM_ID, intent, 0);
         AlarmManager am = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-        // TODO set it back
-        /*am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME,
-                AlarmManager.INTERVAL_FIFTEEN_MINUTES,
-                AlarmManager.INTERVAL_FIFTEEN_MINUTES, pi);*/
-        am.setRepeating(AlarmManager.ELAPSED_REALTIME,
-                10000, 60000, pi);
+        long interval = getInterval(context);
+        am.setInexactRepeating(AlarmManager.ELAPSED_REALTIME, interval, interval, pi);
     }
 
     public static void disableAlarm(Context context) {
@@ -70,19 +89,23 @@ public class TaskManagerService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.d(TAG, "In service...");
-        boolean conn = haveInternetConnection();
+        boolean connect = haveInternetConnection();
         BridgeServiceToApp bridge = new BridgeServiceToApp();
-        bridge.setLastSession(conn);
+        bridge.setLastSession(connect);
         bridge.setDatetime();
         bridge.save();
-        if (!conn) {
+        if (!connect) {
             return;
         }
+
+        boolean showNotifications = showNotifications(this);
 
         Log.d(TAG, "Executing tasks...");
         List<Task> tasks = getAllTasks();
         for (Task t : tasks) {
-            t.execute(this);
+            if(!t.execute(this) && showNotifications)
+                new NotificationController(this)
+                        .notifyAboutFailedExecution();
         }
     }
 

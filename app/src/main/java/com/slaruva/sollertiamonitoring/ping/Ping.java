@@ -2,6 +2,8 @@ package com.slaruva.sollertiamonitoring.ping;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,14 +35,17 @@ public class Ping extends SugarRecord implements Task {
     private static final String TAG = "Ping";
 
     @Override
-    public void execute(Context context) {
+    public boolean execute(Context context) {
         PingLog log;
         try {
-            log = ping();
+            log = ping(context);
         } catch (Exception e) {
             log = new PingLog(e.getMessage(), this, SimpleLog.State.FAIL);
         }
         log.save();
+        if(log.getState() == SimpleLog.State.FAIL)
+            return false;
+        return true;
     }
 
     @Override
@@ -128,18 +133,26 @@ public class Ping extends SugarRecord implements Task {
         return proc.exitValue();
     }
 
-    public static final int numberOfPings = 5;
-    public PingLog ping() throws IOException, InterruptedException {
+    private SharedPreferences sharedPreferences;
+
+    public int getNumberOfTries(Context c) {
+        if(sharedPreferences == null)
+            sharedPreferences = PreferenceManager.getDefaultSharedPreferences(c);
+        return sharedPreferences.getInt("pref_portcheck_tries", 5);
+    }
+
+    public PingLog ping(Context c) throws IOException, InterruptedException {
         StringBuffer echo = new StringBuffer();
         Runtime runtime = Runtime.getRuntime();
-        Log.i(TAG, "About to ping using runtime.exec");
-        Process proc = runtime.exec("ping -c " + numberOfPings + " " + ip);
+        Log.i(TAG, "About to ping using runtime.exe");
+        int numberOfTries = getNumberOfTries(c);
+        Process proc = runtime.exec("ping -c " + numberOfTries + " " + ip);
         proc.waitFor();
         // "unknown host" messsage goes to stderr
         StringBuilder b = buffStream(proc.getInputStream());
         b.append(buffStream(proc.getErrorStream()));
 
-        return getPingLog(b.toString());
+        return getPingLog(b.toString(), numberOfTries);
     }
 
     private StringBuilder buffStream(InputStream is) throws IOException {
@@ -186,7 +199,7 @@ public class Ping extends SugarRecord implements Task {
      *
      * @param s
      */
-    private PingLog getPingLog(String s) {
+    private PingLog getPingLog(String s, int numberOfPings) {
         PingLog log = new PingLog(this);
         log.setTransmitted(numberOfPings);
         if (s.contains(" 100% packet loss")) {
