@@ -32,6 +32,7 @@ import java.util.List;
 public class Ping extends SugarRecord implements Task {
     //todo add ping time, %loss and so on
     private String ip;
+    private int warningLimit = 1;
     private static final String TAG = "Ping";
 
     @Override
@@ -59,7 +60,8 @@ public class Ping extends SugarRecord implements Task {
             holder = new PingViewHolder();
             holder.ip = new IpDisplayer((TextView) rowView.findViewById(R.id.ip));
             holder.element = (RelativeLayout) rowView.findViewById(R.id.element);
-            holder.img = new StatusDisplayer((ImageView) rowView.findViewById(R.id.state));
+            holder.status = new StatusDisplayer((ImageView) rowView.findViewById(R.id.state),
+                    (LinearLayout) rowView.findViewById(R.id.recent_summary));
             holder.percentage = new PercentageDisplayer(
                     (LinearLayout) rowView.findViewById(R.id.percentage_displayer));
             rowView.setTag(holder);
@@ -71,7 +73,7 @@ public class Ping extends SugarRecord implements Task {
 
         holder.percentage.updateView(this);
 
-        holder.img.updateView(this);
+        holder.status.updateView(this);
         return rowView;
     }
 
@@ -258,6 +260,25 @@ public class Ping extends SugarRecord implements Task {
         IpDisplayer ip;
         PercentageDisplayer percentage;
         RelativeLayout element;
-        StatusDisplayer img;
+        StatusDisplayer status;
+    }
+
+    @Override
+    public long countRecentFailedLogs(long datetime) {
+        return PingLog.count(PingLog.class, "task_parent = ? AND state = ? AND datetime > ?",
+                new String[]{this.getId().toString(),
+                        Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.FAIL)),
+                        Long.toString(datetime)});
+    }
+
+    @Override
+    public int getWarningLimit() {
+        return warningLimit;
+    }
+
+    @Override
+    public void setWarningLimit(int n) {
+        warningLimit = n;
+        save();
     }
 }

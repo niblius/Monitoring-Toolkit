@@ -1,7 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#00b1ff</color>
-    <color name="colorPrimaryDark">#00b1dd</color>
+    <color name="toolbarColor">#000000</color>
+    <color name="toolbarTextColorPrimary">#ffffff</color>
+    <color name="toolbarTextColorSecondary">#000000</color>
+
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#353535</color>
+
     <color name="colorAccent">#FF4081</color>
     <color name="colorError">#FF0000</color>
+
+    <color name="colorLogLineErrorStart">#FF0000</color>
+    <color name="colorLogLineErrorEnd">#ffd9da</color>
+    <color name="colorLogLineSuccess">#33FF88</color>
+    <color name="colorLogLinePartialSuccessStart">#f7dd69</color>
+    <color name="colorLogLinePartialSuccessEnd">#faecaf</color>
+
+    <color name="transparent">#80000000</color>
 </resources>

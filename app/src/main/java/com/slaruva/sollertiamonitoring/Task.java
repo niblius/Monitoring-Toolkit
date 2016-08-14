@@ -32,6 +32,10 @@ public interface Task {
 
     public long countSuccessfulLogs();
     public long countAllLogs();
+    public long countRecentFailedLogs(long datetime);
+
+    public int getWarningLimit();
+    public void setWarningLimit(int n);
 
     public SimpleLog getLastLog();
 

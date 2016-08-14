@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,10 +27,7 @@ import com.slaruva.sollertiamonitoring.ping.IpDisplayer;
 import org.apache.commons.net.telnet.TelnetClient;
 
 import java.io.IOException;
-import java.net.ConnectException;
-import java.net.UnknownHostException;
 import java.security.InvalidParameterException;
-import java.util.Date;
 import java.util.List;
 
 import static java.lang.Math.abs;
@@ -42,6 +38,7 @@ import static java.lang.Math.abs;
 public class PortCheck extends SugarRecord implements Task {
     private String ip;
     private int port;
+    private int warningLimit = 1;
     public static final String TAG = "PortCheck";
 
     //  for performance we use one TelnetClient instance for all
@@ -152,7 +149,8 @@ public class PortCheck extends SugarRecord implements Task {
             holder.ip = new IpDisplayer((TextView)rowView.findViewById(R.id.ip));
             holder.portView = (TextView)rowView.findViewById(R.id.port);
             holder.element = (RelativeLayout) rowView.findViewById(R.id.element);
-            holder.img = new StatusDisplayer((ImageView) rowView.findViewById(R.id.state));
+            holder.status = new StatusDisplayer((ImageView) rowView.findViewById(R.id.state),
+                    (LinearLayout) rowView.findViewById(R.id.recent_summary));
             holder.percentage =
                     new PercentageDisplayer(
                             (LinearLayout) rowView.findViewById(R.id.percentage_displayer));
@@ -167,7 +165,7 @@ public class PortCheck extends SugarRecord implements Task {
 
         holder.portView.setText(String.format("%d", port));
 
-        holder.img.updateView(this);
+        holder.status.updateView(this);
 
         return rowView;
     }
@@ -249,7 +247,26 @@ public class PortCheck extends SugarRecord implements Task {
         IpDisplayer ip;
         TextView portView;
         RelativeLayout element;
-        StatusDisplayer img;
+        StatusDisplayer status;
         PercentageDisplayer percentage;
+    }
+
+    @Override
+    public long countRecentFailedLogs(long datetime) {
+        return PortCheckLog.count(PortCheckLog.class, "task_parent = ? AND state = ? AND datetime > ?",
+                new String[]{this.getId().toString(),
+                        Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.FAIL)),
+                        Long.toString(datetime)});
+    }
+
+    @Override
+    public int getWarningLimit() {
+        return warningLimit;
+    }
+
+    @Override
+    public void setWarningLimit(int n) {
+        warningLimit = n;
+        save();
     }
 }

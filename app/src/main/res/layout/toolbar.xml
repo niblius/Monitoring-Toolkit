@@ -4,4 +4,16 @@
     android:layout_height="?attr/actionBarSize"
     android:background="?attr/colorPrimary"
     android:elevation="4dp"
-    android:theme="@style/ThemeOverlay.AppCompat.ActionBar" />
+    android:theme="@style/AppTheme.Toolbar">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:id="@+id/logo"
+            android:src="@drawable/logo"
+            android:visibility="gone"/>
+    </RelativeLayout>
+</android.support.v7.widget.Toolbar>

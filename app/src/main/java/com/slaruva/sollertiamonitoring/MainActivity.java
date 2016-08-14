@@ -20,10 +20,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -52,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.setOnRefreshListener(new MyRefreshListener());
+
+        showLastSessionPopUp();
     }
 
     private TasksAdapter adapter;
@@ -75,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedMenuFragment sharedMenu;
     private void initToolbar(Bundle savedInstanceState) {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.app_name);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
 
         if(savedInstanceState == null) {
@@ -85,6 +89,9 @@ public class MainActivity extends AppCompatActivity {
             transaction.add(sharedMenu, SharedMenuFragment.TAG);
             transaction.commit();
         }
+
+        ImageView img = (ImageView) findViewById(R.id.logo);
+        img.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -119,6 +126,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         updateAdapter();
+    }
+
+    private void showLastSessionPopUp() {
+        List<BridgeServiceToApp> bridges = BridgeServiceToApp.find(BridgeServiceToApp.class,
+                "last_session != 0",
+                new String[]{},
+                null, "id DESC", "1");
+        if(bridges.isEmpty())
+            return;
+        BridgeServiceToApp bridge = bridges.get(0);
+        CharSequence text = getString(R.string.last_session_was) +
+                bridge.getDatetime(new SimpleDateFormat(" dd/MM/yyyy hh:mm a"));
+        Toast t = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+        t.show();
     }
 
     class TasksLoader extends AsyncTask<Integer, Integer, List<Task>> {

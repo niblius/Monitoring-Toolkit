@@ -1,4 +1,7 @@
 <resources>
+    <string name="summary_beginning">Failed</string>
+    <string name="summary_ending_single">time recently.</string>
+    <string name="summary_ending_plural">times recently.</string>
     <string name="show_notifications">Show notifications</string>
     <string name="set_number_of_tries_for_ping_explanation">Set number of tries for tasks of \"ping\" type.</string>
     <string name="set_number_of_tries_for_portcheck_explanation">Set number of tries for tasks of \"checking port\" type.</string>

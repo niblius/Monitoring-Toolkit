@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="10"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:id="@+id/recent_summary">
+
+    <TextView
+        android:id="@+id/recent_summary_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:layout_weight="8"
+        android:paddingLeft="25sp"
+        android:text="Failed N times recently."
+        android:background="@drawable/recent_logs_line_background_fail"
+        android:textAppearance="?android:attr/textAppearanceSmall"/>
+</LinearLayout>

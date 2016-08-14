@@ -40,21 +40,6 @@ public class Sollertia extends Application {
         SugarContext.init(this);
         setPreferences();
         doFirstTimeRoutine();
-        showLastSessionPopUp();
-    }
-
-    private void showLastSessionPopUp() {
-        List<BridgeServiceToApp> bridges = BridgeServiceToApp.find(BridgeServiceToApp.class,
-                "last_session != 0",
-                new String[]{},
-                null, "id DESC", "1");
-        if(bridges.isEmpty())
-            return;
-        BridgeServiceToApp bridge = bridges.get(0);
-        CharSequence text = getString(R.string.last_session_was) +
-                bridge.getDatetime(new SimpleDateFormat(" dd/MM/yyyy hh:mm a"));
-        Toast t = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
-        t.show();
     }
 
     private static final String PREFERENCE_WAS_PREVIOUSLY_STARTED =

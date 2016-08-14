@@ -9,7 +9,7 @@
     <application
         android:name=".Sollertia"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme.NoActionBar">
@@ -53,7 +53,7 @@
             android:value="sollertiamonitoring.db" />
         <meta-data
             android:name="VERSION"
-            android:value="21" />
+            android:value="22" />
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
