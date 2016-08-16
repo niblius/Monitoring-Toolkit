@@ -19,4 +19,9 @@
         android:title="@string/delete"
         android:icon="@drawable/trash_can"
         android:onClick="onDelete" />
+    <item
+        android:id="@+id/task_preferences"
+        app:showAsAction="never"
+        android:title="@string/options"
+        android:onClick="onOptions" />
 </menu>

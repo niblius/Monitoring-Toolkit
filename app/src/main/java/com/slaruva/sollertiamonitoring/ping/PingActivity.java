@@ -1,19 +1,18 @@
 package com.slaruva.sollertiamonitoring.ping;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.slaruva.sollertiamonitoring.R;
-import com.slaruva.sollertiamonitoring.TaskScrollableActivity;
+import com.slaruva.sollertiamonitoring.TaskBasicActivity;
 
 import java.util.List;
 
-public class PingActivity extends TaskScrollableActivity<Ping, PingLog> {
+public class PingActivity extends TaskBasicActivity<Ping, PingLog> {
     private Ping ping;
 
     @Override
@@ -57,5 +56,11 @@ public class PingActivity extends TaskScrollableActivity<Ping, PingLog> {
         }
         errorVisibilityOff();
         ping.save();
+    }
+
+    public void onOptions(MenuItem item) {
+        Intent i = new Intent(getApplicationContext(), PingOptionsActivity.class);
+        i.putExtra(TaskBasicActivity.TASK_ID_TAG, ((Ping)task).getId().longValue());
+        startActivity(i);
     }
 }

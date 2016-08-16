@@ -1,15 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
-    <com.slaruva.sollertiamonitoring.NumberPickerPreference
-        android:title="@string/set_number_of_tries_for_ping"
-        android:summary="@string/set_number_of_tries_for_ping_explanation"
-        android:key="pref_ping_tries"
-        android:defaultValue="5"/>
-    <com.slaruva.sollertiamonitoring.NumberPickerPreference
-        android:title="@string/set_number_of_tries_for_portcheck"
-        android:summary="@string/set_number_of_tries_for_portcheck_explanation"
-        android:key="pref_portcheck_tries"
-        android:defaultValue="2"/>
     <ListPreference
         android:title="@string/how_often_execute"
         android:key="pref_how_often"

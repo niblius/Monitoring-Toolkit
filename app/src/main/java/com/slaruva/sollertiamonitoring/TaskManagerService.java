@@ -103,9 +103,11 @@ public class TaskManagerService extends IntentService {
         Log.d(TAG, "Executing tasks...");
         List<Task> tasks = getAllTasks();
         for (Task t : tasks) {
-            if(!t.execute(this) && showNotifications)
-                new NotificationController(this)
-                        .notifyAboutFailedExecution();
+            if(t.isEnabled() && !t.execute(this) && showNotifications) {
+                if(t.countRecentFailedLogs() > t.getWarningLimit())
+                    new NotificationController(this)
+                            .notifyAboutFailedExecution();
+            }
         }
     }
 

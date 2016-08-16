@@ -9,7 +9,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 public class SharedMenuFragment extends Fragment {
-    static final String TAG = "SharedMenuFragment";
+    public static final String TAG = "SharedMenuFragment";
     private boolean showSettingsButton = true;
 
     public void setSettingsButtonNotVisible() {

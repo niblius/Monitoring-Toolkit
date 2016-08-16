@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".Sollertia"
@@ -43,6 +45,12 @@
         </activity>
 
         <activity android:name=".SettingsActivity">
+        </activity>
+
+        <activity android:name=".ping.PingOptionsActivity">
+        </activity>
+
+        <activity android:name=".portcheck.PortCheckOptionsActivity">
         </activity>
 
         <service android:name=".TaskManagerService" >

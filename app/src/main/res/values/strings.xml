@@ -1,4 +1,5 @@
 <resources>
+    <string name="options">Task options</string>
     <string name="summary_beginning">Failed</string>
     <string name="summary_ending_single">time recently.</string>
     <string name="summary_ending_plural">times recently.</string>
@@ -6,8 +7,11 @@
     <string name="set_number_of_tries_for_ping_explanation">Set number of tries for tasks of \"ping\" type.</string>
     <string name="set_number_of_tries_for_portcheck_explanation">Set number of tries for tasks of \"checking port\" type.</string>
     <string name="how_often_execute">How often should tasks be executed?</string>
+    <string name="number_of_tries">Number of tries</string>
+    <string name="warning_limit">Warning limit</string>
+    <string name="on_off">On/Off</string>
     <string name="set_number_of_tries_for_ping">Number of tries for \"ping\"</string>
-    <string name="set_number_of_tries_for_portcheck">Numebr of tries for \"portcheck\"</string>
+    <string name="set_number_of_tries_for_portcheck">Number of tries for \"portcheck\"</string>
     <string name="failed_execution_notification_text">Execution of one or more tasks failed.</string>
     <string name="task_execution_on">Task execution is on.</string>
     <string name="task_execution_off">Task execution is off.</string>

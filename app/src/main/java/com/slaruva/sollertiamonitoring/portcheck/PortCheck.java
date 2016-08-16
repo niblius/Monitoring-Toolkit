@@ -5,7 +5,6 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +20,7 @@ import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.SimpleLog;
 import com.slaruva.sollertiamonitoring.StatusDisplayer;
 import com.slaruva.sollertiamonitoring.Task;
-import com.slaruva.sollertiamonitoring.TaskScrollableActivity;
+import com.slaruva.sollertiamonitoring.TaskBasicActivity;
 import com.slaruva.sollertiamonitoring.ping.IpDisplayer;
 
 import org.apache.commons.net.telnet.TelnetClient;
@@ -29,8 +28,7 @@ import org.apache.commons.net.telnet.TelnetClient;
 import java.io.IOException;
 import java.security.InvalidParameterException;
 import java.util.List;
-
-import static java.lang.Math.abs;
+import java.util.concurrent.TimeUnit;
 
 /**
  * PortCheck is a task that pings specific port of given server and logs response.
@@ -39,7 +37,30 @@ public class PortCheck extends SugarRecord implements Task {
     private String ip;
     private int port;
     private int warningLimit = 1;
+    private int numberOfTries = 2;
+    private boolean enabled = true;
+
+    @Override
+    public int getNumberOfTries() {
+        return numberOfTries;
+    }
+
+    @Override
+    public void setNumberOfTries(int numberOfTries) {
+        this.numberOfTries = numberOfTries;
+    }
+
     public static final String TAG = "PortCheck";
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     //  for performance we use one TelnetClient instance for all
     //  PortChecks in single thread
@@ -64,11 +85,14 @@ public class PortCheck extends SugarRecord implements Task {
 
     private SharedPreferences sharedPreferences;
 
+    /*
     public int getNumberOfTries(Context c) {
+        // not used now
         if(sharedPreferences == null)
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(c);
         return sharedPreferences.getInt("pref_ping_tries", 2);
     }
+    */
 
     /**
      * Performs connection to the server and analyzes response
@@ -76,7 +100,7 @@ public class PortCheck extends SugarRecord implements Task {
      * @return Resource strings that correspond to: success, error, fail or unknown_host
      */
     private PortCheckLog getPortResponse(Context context) {
-        int NUMBER_OF_TRIES = getNumberOfTries(context);
+        int NUMBER_OF_TRIES = getNumberOfTries();
         boolean[] results = new boolean[NUMBER_OF_TRIES];
         double [] delays = new double[NUMBER_OF_TRIES];
         double min = Double.MAX_VALUE, max = 0d, avg = 0d;
@@ -185,7 +209,7 @@ public class PortCheck extends SugarRecord implements Task {
     @Override
     public Intent getIntentToDetailedInfo(Context context) {
         Intent i = new Intent(context, PortCheckActivity.class);
-        i.putExtra(TaskScrollableActivity.TASK_ID_TAG, this.getId().longValue());
+        i.putExtra(TaskBasicActivity.TASK_ID_TAG, this.getId().longValue());
         return i;
     }
 
@@ -252,7 +276,7 @@ public class PortCheck extends SugarRecord implements Task {
     }
 
     @Override
-    public long countRecentFailedLogs(long datetime) {
+    public long countFailedLogs(long datetime) {
         return PortCheckLog.count(PortCheckLog.class, "task_parent = ? AND state = ? AND datetime > ?",
                 new String[]{this.getId().toString(),
                         Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.FAIL)),
@@ -268,5 +292,20 @@ public class PortCheck extends SugarRecord implements Task {
     public void setWarningLimit(int n) {
         warningLimit = n;
         save();
+    }
+
+    @Override
+    public long countRecentFailedLogs() {
+        long twoDaysAgo = System.currentTimeMillis() -  2 * TimeUnit.DAYS.toMillis(1);
+        return  countFailedLogs(twoDaysAgo);
+    }
+
+    @Override
+    public long countAllRecentLogs() {
+        long twoDaysAgo = System.currentTimeMillis() -  2 * TimeUnit.DAYS.toMillis(1);
+
+        return PortCheckLog.count(PortCheckLog.class, "task_parent = ? AND datetime > ?",
+                new String[]{this.getId().toString(),
+                        Long.toString(twoDaysAgo)});
     }
 }

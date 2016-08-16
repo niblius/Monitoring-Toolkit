@@ -32,7 +32,9 @@ public interface Task {
 
     public long countSuccessfulLogs();
     public long countAllLogs();
-    public long countRecentFailedLogs(long datetime);
+    public long countAllRecentLogs();
+    public long countFailedLogs(long datetime);
+    public long countRecentFailedLogs();
 
     public int getWarningLimit();
     public void setWarningLimit(int n);
@@ -40,4 +42,10 @@ public interface Task {
     public SimpleLog getLastLog();
 
     public String getIp();
+
+    public boolean isEnabled();
+    public void setEnabled(boolean b);
+
+    public int getNumberOfTries();
+    public void setNumberOfTries(int n);
 }

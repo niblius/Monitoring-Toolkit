@@ -6,8 +6,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import java.util.Calendar;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 public class StatusDisplayer implements Displayer{
@@ -25,22 +23,28 @@ public class StatusDisplayer implements Displayer{
     public void updateView(Task t) {
         SimpleLog lastLog = t.getLastLog();
         BridgeServiceToApp bridge = BridgeServiceToApp.last(BridgeServiceToApp.class);
-        if (bridge == null || bridge.isLastSessionSuccessful()) {
-            if (lastLog == null)
-                img.setImageResource(R.drawable.being_processed);
-            else if (lastLog.getState() == SimpleLog.State.SUCCESS)
-                img.setImageResource(R.drawable.success);
-            else if (lastLog.getState() == SimpleLog.State.FAIL)
-                img.setImageResource(R.drawable.failed);
-            else if (lastLog.getState() == SimpleLog.State.PARTIAL_SUCCESS)
-                img.setImageResource(R.drawable.partial_success);
-        } else {
-            img.setImageResource(R.drawable.offline);
+        if(!t.isEnabled())
+            img.setImageResource(R.drawable.stop);
+        else {
+            if (bridge == null || bridge.isLastSessionSuccessful()) {
+                if (lastLog == null)
+                    img.setImageResource(R.drawable.being_processed);
+                else if (lastLog.getState() == SimpleLog.State.SUCCESS)
+                    img.setImageResource(R.drawable.success);
+                else if (lastLog.getState() == SimpleLog.State.FAIL)
+                    img.setImageResource(R.drawable.failed);
+                else if (lastLog.getState() == SimpleLog.State.PARTIAL_SUCCESS)
+                    img.setImageResource(R.drawable.partial_success);
+            } else {
+                img.setImageResource(R.drawable.offline);
+            }
         }
 
         Context cont = summary.getContext();
-        long failed = t.countRecentFailedLogs(
-                System.currentTimeMillis() -  2 * TimeUnit.DAYS.toMillis(1));
+
+        long failed = t.countRecentFailedLogs();
+        long allLogs = t.countAllRecentLogs();
+
         int YELLOW = t.getWarningLimit();
         if(failed == 0)
             summary.setVisibility(View.GONE);
@@ -49,7 +53,7 @@ public class StatusDisplayer implements Displayer{
 
             // string recource deletes leading and post spaces
             summary_text.setText(cont.getString(R.string.summary_beginning) + " " +
-                    failed + " " +
+                    failed + "/" + allLogs + " " +
                     ((failed == 1) ? cont.getString(R.string.summary_ending_single) :
                             cont.getString(R.string.summary_ending_plural)));
 

@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -23,10 +24,11 @@ import android.widget.TextView;
 
 import com.orm.SugarRecord;
 import com.orm.util.NamingHelper;
+import com.slaruva.sollertiamonitoring.portcheck.PortCheckOptionsActivity;
 
 import java.util.List;
 
-public abstract class TaskScrollableActivity<T extends SugarRecord & Task, L extends SimpleLog>
+public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends SimpleLog>
         extends AppCompatActivity implements AbsListView.OnScrollListener {
 
     public static final String TASK_ID_TAG = "TASK_ID_TAG";

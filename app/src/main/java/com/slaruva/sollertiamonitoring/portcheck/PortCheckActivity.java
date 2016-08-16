@@ -2,18 +2,18 @@ package com.slaruva.sollertiamonitoring.portcheck;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 
 import com.slaruva.sollertiamonitoring.R;
-import com.slaruva.sollertiamonitoring.TaskScrollableActivity;
+import com.slaruva.sollertiamonitoring.TaskBasicActivity;
 
 import java.util.List;
 
-public class PortCheckActivity extends TaskScrollableActivity<PortCheck, PortCheckLog> {
+public class PortCheckActivity extends TaskBasicActivity<PortCheck, PortCheckLog> {
     private PortCheck pc;
 
     @Override
@@ -70,5 +70,11 @@ public class PortCheckActivity extends TaskScrollableActivity<PortCheck, PortChe
         }
         errorVisibilityOff();
         pc.save();
+    }
+
+    public void onOptions(MenuItem item) {
+        Intent i = new Intent(getApplicationContext(), PortCheckOptionsActivity.class);
+        i.putExtra(TaskBasicActivity.TASK_ID_TAG, ((PortCheck)task).getId().longValue());
+        startActivity(i);
     }
 }

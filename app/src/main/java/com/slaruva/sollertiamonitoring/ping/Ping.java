@@ -20,7 +20,7 @@ import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.SimpleLog;
 import com.slaruva.sollertiamonitoring.StatusDisplayer;
 import com.slaruva.sollertiamonitoring.Task;
-import com.slaruva.sollertiamonitoring.TaskScrollableActivity;
+import com.slaruva.sollertiamonitoring.TaskBasicActivity;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -28,12 +28,25 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.security.InvalidParameterException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Ping extends SugarRecord implements Task {
     //todo add ping time, %loss and so on
     private String ip;
     private int warningLimit = 1;
+    private boolean enabled = true;
+    private int numberOfTries = 5;
     private static final String TAG = "Ping";
+
+    @Override
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    @Override
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 
     @Override
     public boolean execute(Context context) {
@@ -92,7 +105,7 @@ public class Ping extends SugarRecord implements Task {
     @Override
     public Intent getIntentToDetailedInfo(Context context) {
         Intent i = new Intent(context, PingActivity.class);
-        i.putExtra(TaskScrollableActivity.TASK_ID_TAG, this.getId().longValue());
+        i.putExtra(TaskBasicActivity.TASK_ID_TAG, this.getId().longValue());
         return i;
     }
 
@@ -137,17 +150,20 @@ public class Ping extends SugarRecord implements Task {
 
     private SharedPreferences sharedPreferences;
 
+    /*
     public int getNumberOfTries(Context c) {
+        // not used now
         if(sharedPreferences == null)
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(c);
         return sharedPreferences.getInt("pref_portcheck_tries", 5);
     }
+    */
 
     public PingLog ping(Context c) throws IOException, InterruptedException {
         StringBuffer echo = new StringBuffer();
         Runtime runtime = Runtime.getRuntime();
         Log.i(TAG, "About to ping using runtime.exe");
-        int numberOfTries = getNumberOfTries(c);
+        int numberOfTries = getNumberOfTries();
         Process proc = runtime.exec("ping -c " + numberOfTries + " " + ip);
         proc.waitFor();
         // "unknown host" messsage goes to stderr
@@ -264,7 +280,7 @@ public class Ping extends SugarRecord implements Task {
     }
 
     @Override
-    public long countRecentFailedLogs(long datetime) {
+    public long countFailedLogs(long datetime) {
         return PingLog.count(PingLog.class, "task_parent = ? AND state = ? AND datetime > ?",
                 new String[]{this.getId().toString(),
                         Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.FAIL)),
@@ -280,5 +296,30 @@ public class Ping extends SugarRecord implements Task {
     public void setWarningLimit(int n) {
         warningLimit = n;
         save();
+    }
+
+    @Override
+    public long countRecentFailedLogs() {
+        long twoDaysAgo = System.currentTimeMillis() -  2 * TimeUnit.DAYS.toMillis(1);
+        return  countFailedLogs(twoDaysAgo);
+    }
+
+    @Override
+    public long countAllRecentLogs() {
+        long twoDaysAgo = System.currentTimeMillis() -  2 * TimeUnit.DAYS.toMillis(1);
+
+        return PingLog.count(PingLog.class, "task_parent = ? AND datetime > ?",
+                new String[]{this.getId().toString(),
+                        Long.toString(twoDaysAgo)});
+    }
+
+    @Override
+    public int getNumberOfTries() {
+        return numberOfTries;
+    }
+
+    @Override
+    public void setNumberOfTries(int numberOfTries) {
+        this.numberOfTries = numberOfTries;
     }
 }
