@@ -11,6 +11,7 @@ import android.widget.Toast;
 import com.orm.SugarContext;
 import com.orm.SugarDb;
 import com.orm.util.SugarConfig;
+import com.slaruva.sollertiamonitoring.integrity.Integrity;
 import com.slaruva.sollertiamonitoring.ping.Ping;
 import com.slaruva.sollertiamonitoring.ping.PingLog;
 import com.slaruva.sollertiamonitoring.portcheck.PortCheck;
@@ -56,6 +57,8 @@ public class Sollertia extends Application {
             pingExample.save();
             PortCheck pcExample = new PortCheck("github.com", 80);
             pcExample.save();
+            Integrity iExample = new Integrity("http://google.com", ".*[a-fA-F0-9]{2}.*");
+            iExample.save();
         }
     }
 

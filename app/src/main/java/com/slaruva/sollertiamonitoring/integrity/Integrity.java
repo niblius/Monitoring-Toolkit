@@ -189,7 +189,7 @@ public class Integrity extends SugarRecord implements Task {
             throw new InvalidParameterException("Invalid IP.");
         }
 
-        if(!setIp(regexp)) {
+        if(!setRegexp(regexp)) {
             throw new InvalidParameterException("Invalid regexp.");
         }
     }

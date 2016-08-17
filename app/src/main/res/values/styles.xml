@@ -16,8 +16,5 @@
         <item name="android:textColorPrimary">@color/toolbarTextColorPrimary</item>
         <item name="android:textColorSecondary">@color/toolbarTextColorSecondary</item>
         <item name="android:textColor">@color/toolbarTextColorSecondary</item>
-
-        <item name="android:colorBackground">@android:color/white</item>
-        <item name="listChoiceBackgroundIndicator">@android:color/white</item>
     </style>
 </resources>
