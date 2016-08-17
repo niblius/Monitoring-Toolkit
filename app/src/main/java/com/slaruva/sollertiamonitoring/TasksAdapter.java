@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 
 import com.slaruva.sollertiamonitoring.ping.Ping;
+import com.slaruva.sollertiamonitoring.portcheck.PortCheck;
 
 import java.util.List;
 
@@ -28,8 +29,10 @@ public class TasksAdapter extends ArrayAdapter<Task> {
         Task elem = getItem(position);
         if (elem instanceof Ping)
             return 0;
-        else
+        else if(elem instanceof PortCheck)
             return 1;
+        else
+            return 2;
     }
 
     @Override

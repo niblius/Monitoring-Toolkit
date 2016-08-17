@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.slaruva.sollertiamonitoring.integrity.CreateIntegrityActivity;
 import com.slaruva.sollertiamonitoring.ping.CreatePingActivity;
 import com.slaruva.sollertiamonitoring.portcheck.CreatePortCheckActivity;
 
@@ -26,6 +27,9 @@ public class CreateTaskDialog extends DialogFragment {
                                 break;
                             case 1:
                                 i = new Intent(context, CreatePingActivity.class);
+                                break;
+                            case 2:
+                                i = new Intent(context, CreateIntegrityActivity.class);
                                 break;
                             default:
                                 // i = new Intent(context, MainActivity.class);

@@ -1,4 +1,6 @@
 <resources>
+    <string name="http_address_example">http://example.com</string>
+    <string name="cant_open_url">Can\'t open URL.</string>
     <string name="options">Task options</string>
     <string name="summary_beginning">Failed</string>
     <string name="summary_ending_single">time recently.</string>
@@ -10,6 +12,13 @@
     <string name="number_of_tries">Number of tries</string>
     <string name="warning_limit">Warning limit</string>
     <string name="on_off">On/Off</string>
+    <string name="ip">Ip address:</string>
+    <string name="regexp">Regular expression:</string>
+    <string name="regexp_example">[a-fA-F0-9]{2}</string>
+    <string name="integrity_success_response">In successful cases response is not being recorded to save device memory.</string>
+    <string name="or_just_generate_regexp">Or just type in anything that suppose to be received
+        from the address and press \"Generate\" button.</string>
+    <string name="gen_regexp">Generate</string>
     <string name="set_number_of_tries_for_ping">Number of tries for \"ping\"</string>
     <string name="set_number_of_tries_for_portcheck">Number of tries for \"portcheck\"</string>
     <string name="failed_execution_notification_text">Execution of one or more tasks failed.</string>
@@ -43,10 +52,12 @@
     <string name="partial_success">Partial success</string>
     <string name="save">Save</string>
     <string name="delete">Delete</string>
+    <string name="regexp_not_valid">Regexp is not valid.</string>
 
     <string-array name="tasks_array">
         <item>Ping specific port</item>
         <item>Ping</item>
+        <item>Content integrity test</item>
     </string-array>
 
 

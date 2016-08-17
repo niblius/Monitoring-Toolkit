@@ -10,6 +10,7 @@ import android.nfc.Tag;
 import android.preference.PreferenceManager;
 import android.util.Log;
 
+import com.slaruva.sollertiamonitoring.integrity.Integrity;
 import com.slaruva.sollertiamonitoring.ping.Ping;
 import com.slaruva.sollertiamonitoring.portcheck.PortCheck;
 
@@ -83,6 +84,7 @@ public class TaskManagerService extends IntentService {
         List<Task> list = new Vector<>();
         list.addAll(PortCheck.listAll(PortCheck.class));
         list.addAll(Ping.listAll(Ping.class));
+        list.addAll(Ping.listAll(Integrity.class));
         return list;
     }
 

@@ -1,4 +1,4 @@
-package com.slaruva.sollertiamonitoring.ping;
+package com.slaruva.sollertiamonitoring;
 
 import android.widget.TextView;
 

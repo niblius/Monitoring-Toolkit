@@ -21,7 +21,7 @@ import com.slaruva.sollertiamonitoring.SimpleLog;
 import com.slaruva.sollertiamonitoring.StatusDisplayer;
 import com.slaruva.sollertiamonitoring.Task;
 import com.slaruva.sollertiamonitoring.TaskBasicActivity;
-import com.slaruva.sollertiamonitoring.ping.IpDisplayer;
+import com.slaruva.sollertiamonitoring.IpDisplayer;
 
 import org.apache.commons.net.telnet.TelnetClient;
 
@@ -31,7 +31,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * PortCheck is a task that pings specific port of given server and logs response.
+ * Integrity is a task that pings specific port of given server and logs response.
  */
 public class PortCheck extends SugarRecord implements Task {
     private String ip;
@@ -50,7 +50,7 @@ public class PortCheck extends SugarRecord implements Task {
         this.numberOfTries = numberOfTries;
     }
 
-    public static final String TAG = "PortCheck";
+    public static final String TAG = "Integrity";
 
     @Override
     public boolean isEnabled() {

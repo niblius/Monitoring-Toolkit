@@ -53,6 +53,15 @@
         <activity android:name=".portcheck.PortCheckOptionsActivity">
         </activity>
 
+        <activity android:name=".integrity.CreateIntegrityActivity">
+        </activity>
+
+        <activity android:name=".integrity.IntegrityActivity">
+        </activity>
+
+        <activity android:name=".integrity.IntegrityOptionsActivity">
+        </activity>
+
         <service android:name=".TaskManagerService" >
         </service>
 

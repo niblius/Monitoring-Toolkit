@@ -3,7 +3,6 @@ package com.slaruva.sollertiamonitoring.ping;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,6 +14,7 @@ import android.widget.TextView;
 
 import com.orm.SugarRecord;
 import com.slaruva.sollertiamonitoring.Helper;
+import com.slaruva.sollertiamonitoring.IpDisplayer;
 import com.slaruva.sollertiamonitoring.PercentageDisplayer;
 import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.SimpleLog;

@@ -36,7 +36,7 @@ public class PortCheckActivity extends TaskBasicActivity<PortCheck, PortCheckLog
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_port_check);
+        setContentView(R.layout.activity_portcheck);
         init(savedInstanceState);
 
         pc = (PortCheck) task;

@@ -12,7 +12,7 @@ import com.slaruva.sollertiamonitoring.R;
 
 
 /**
- * Activity responsible for creating new tasks of type: PortCheck
+ * Activity responsible for creating new tasks of type: Integrity
  */
 public class CreatePortCheckActivity extends CreateTaskActivity {
 

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:id="@+id/element">
+
+    <TextView
+        android:layout_weight="1"
+        android:paddingStart="10dip"
+        android:paddingLeft="10dip"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="12/05/15 11:06:00"
+        android:id="@+id/log_date"/>
+
+    <TextView
+        android:layout_width="0dip"
+        android:layout_height="wrap_content"
+        android:maxLength="100"
+        android:text="Very very very very very very very very long text."
+        android:id="@+id/response"
+        android:layout_weight="4"/>
+</LinearLayout>

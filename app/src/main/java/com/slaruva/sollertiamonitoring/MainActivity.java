@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
             updateAdapter();
         }
     }
+
     private SwipeRefreshLayout mSwipeRefreshLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.setOnRefreshListener(new MyRefreshListener());
 
-        showLastSessionPopUp();
+        // showLastSessionPopUp();
     }
 
     private TasksAdapter adapter;
