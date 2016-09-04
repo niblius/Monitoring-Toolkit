@@ -10,4 +10,8 @@
         android:title="@string/show_notifications"
         android:key="pref_show_notifications"
         android:defaultValue="true"/>
+    <CheckBoxPreference
+        android:title="@string/turn_on_off_sound"
+        android:key="pref_play_notification_sound"
+        android:defaultValue="true"/>
 </PreferenceScreen>

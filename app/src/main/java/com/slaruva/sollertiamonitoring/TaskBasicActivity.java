@@ -5,32 +5,38 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.orm.SugarRecord;
 import com.orm.util.NamingHelper;
-import com.slaruva.sollertiamonitoring.portcheck.PortCheckOptionsActivity;
 
 import java.util.List;
 
 public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends SimpleLog>
         extends AppCompatActivity implements AbsListView.OnScrollListener {
 
+    private static final String TAG = "TaskBasicActivity";
     public static final String TASK_ID_TAG = "TASK_ID_TAG";
     public static int PAGE_SIZE = 64;
 
@@ -39,6 +45,7 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
     protected ArrayAdapter<L> adapter;
     protected long tId;
     protected Task task;
+    protected CheckBox showFailsOnlyCheck;
 
     protected abstract Class _getLogClass();
     protected abstract Class _getTaskClass();
@@ -47,6 +54,19 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
     protected abstract int getLogsLayoutID();
     public abstract void onSave(MenuItem item);
 
+    private static final String SHOW_FAILS_PREF = "SHOW_FAILS_PREF";
+    protected void setShowFailsPref(boolean show) {
+        Log.i(TAG, "SHOW_FAILS_PREF is being set to " + show);
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(SHOW_FAILS_PREF, show);
+        editor.apply();
+    }
+
+    protected boolean getShowFailsPref() {
+        return PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean(SHOW_FAILS_PREF, false);
+    }
 
     protected void errorVisibilityOn() {
         TextView err = (TextView) findViewById(R.id.error_view);
@@ -69,13 +89,14 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
         tId = getIntent().getExtras().getLong(TASK_ID_TAG);
         task = (T)T.findById(_getTaskClass(), tId);
 
-        List<L> logs = getFirstPageLogsNewestFirst();
+        boolean show_failed_only = getShowFailsPref();
+        List<L> logs = getFirstPageLogsNewestFirst(show_failed_only);
         ListView logList = (ListView)findViewById(R.id.log_list);
         adapter = createAdapter(this, getLogsLayoutID(), logs);
         logList.setAdapter(adapter);
         logList.setOnScrollListener(this);
 
-        if (logs.size() == 0) {
+        if (logs.size() == 0 && !show_failed_only) {
             TextView no_logs = (TextView) findViewById(R.id.no_logs_message);
             no_logs.setVisibility(View.VISIBLE);
         }
@@ -84,12 +105,22 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.setOnRefreshListener(getOnRefreshListener());
+
+        showFailsOnlyCheck = (CheckBox) findViewById(R.id.show_only_fails);
+        showFailsOnlyCheck.setChecked(show_failed_only);
+        showFailsOnlyCheck.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                setShowFailsPref(isChecked);
+                clearAndUpdateAdapter(isChecked);
+            }
+        });
     }
 
     class BasicOnRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
         @Override
         public void onRefresh() {
-            clearAndUpdateAdapter();
+            clearAndUpdateAdapter(getShowFailsPref());
         }
     }
     protected SwipeRefreshLayout.OnRefreshListener getOnRefreshListener() {
@@ -97,24 +128,35 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
     }
 
     @SuppressWarnings("unchecked")
-    protected List<L> getFirstPageLogsNewestFirst() {
-        return getLogs(0, PAGE_SIZE);
+    protected List<L> getFirstPageLogsNewestFirst(boolean failed_only) {
+        return getLogs(0, PAGE_SIZE, failed_only);
     }
     /**
      * Returns logs followed by the last shown in adapter, sorted by date
      */
     @SuppressWarnings("unchecked")
-    protected List<L> getLogsNewestFirst() {
-        return getLogs(adapter.getCount(), PAGE_SIZE);
+    protected List<L> getLogsNewestFirst(boolean failed_only) {
+        return getLogs(adapter.getCount(), PAGE_SIZE, failed_only);
     }
 
     @SuppressWarnings("unchecked")
-    protected List<L> getLogs(long from, long how_many) {
-        return SugarRecord.findWithQuery(_getLogClass(),
+    protected List<L> getLogs(long from, long how_many, boolean failed_only) {
+        if(failed_only)
+            return SugarRecord.findWithQuery(_getLogClass(),
+                    "SELECT * FROM " + NamingHelper.toSQLName(_getLogClass()) +
+                            " WHERE task_parent = ? AND state = ? " + "ORDER BY id DESC LIMIT ? " +
+                            "OFFSET ?",
+                    Long.toString(tId),
+                    Integer.toString(SimpleLog.State.toInteger(SimpleLog.State.FAIL)),
+                    Long.toString(how_many),
+                    Long.toString(from));
+        else
+            return SugarRecord.findWithQuery(_getLogClass(),
                 "SELECT * FROM " + NamingHelper.toSQLName(_getLogClass()) +
                         " WHERE task_parent = ? " + "ORDER BY id DESC LIMIT ? " +
                         "OFFSET ?",
-                Long.toString(tId), Long.toString(how_many),
+                Long.toString(tId),
+                Long.toString(how_many),
                 Long.toString(from));
     }
 
@@ -124,26 +166,34 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
         adapter.notifyDataSetChanged();
     }
 
-    @SuppressWarnings("unchecked")
-    protected void clearAndUpdateAdapter() {;
-        AsyncTask<Integer, Integer, List<L>> async = new AsyncTask<Integer, Integer, List<L>>() {
-            @Override
-            protected void onPreExecute() {
-                mSwipeRefreshLayout.setRefreshing(true);
-            }
-            @Override
-            protected List<L> doInBackground(Integer... params) {
-                return getLogs(0, adapter.getCount());
-            }
-            @Override
-            protected void onPostExecute(List<L> updatedLogs) {
-                adapter.clear();
-                adapter.addAll(updatedLogs);
-                adapter.notifyDataSetChanged();
-                mSwipeRefreshLayout.setRefreshing(false);
-            }
-        };
+    private class AsyncLogsUpdater extends AsyncTask<Integer, Integer, List<L>> {
+        private boolean show_fails;
+        public AsyncLogsUpdater(boolean show_fails) {
+            this.show_fails = show_fails;
+        }
 
+        @Override
+        protected void onPreExecute() {
+            mSwipeRefreshLayout.setRefreshing(true);
+        }
+
+        @Override
+        protected List<L> doInBackground(Integer... params) {
+            long count = (adapter.getCount() == 0) ? PAGE_SIZE : adapter.getCount();
+            return getLogs(0, count, show_fails);
+        }
+
+        @Override
+        protected void onPostExecute(List<L> updatedLogs) {
+            adapter.clear();
+            adapter.addAll(updatedLogs);
+            adapter.notifyDataSetChanged();
+            mSwipeRefreshLayout.setRefreshing(false);
+        }
+    }
+
+    protected void clearAndUpdateAdapter(boolean show_fails) {;
+        AsyncLogsUpdater async = new AsyncLogsUpdater(show_fails);
         async.execute();
     }
 
@@ -158,7 +208,7 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
         lastItemNumb = firstVisibleItem + visibleItemCount;
         if(preLastItemNumb != lastItemNumb && lastItemNumb == totalItemCount) {
             preLastItemNumb = lastItemNumb;
-            List<L> newLogs = getLogsNewestFirst();
+            List<L> newLogs = getLogsNewestFirst(getShowFailsPref());
             adapter.addAll(newLogs);
             adapter.notifyDataSetChanged();
         }
@@ -199,6 +249,25 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.task_activity_menu, menu);
+
+        MenuItem mi = menu.findItem(R.id.on_off_switch_item);
+        View v = mi.getActionView();
+        Switch on_off = (Switch) v.findViewById(R.id.switchForToolbar);
+        on_off.setChecked(task.isEnabled());
+        on_off.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Context context = TaskBasicActivity.this;
+                task.setEnabled(isChecked);
+                Toast t = Toast.makeText(getApplicationContext(),
+                        getString((isChecked) ? R.string.task_is_on : R.string.task_is_off),
+                        Toast.LENGTH_SHORT);
+                t.show();
+
+                onSave(null);
+            }
+        });
+
         return true;
     }
 
@@ -241,6 +310,12 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
     @Override
     protected void onResume() {
         super.onResume();
-        clearAndUpdateAdapter();
+        clearAndUpdateAdapter(getShowFailsPref());
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        onSave(null);
     }
 }

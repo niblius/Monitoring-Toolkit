@@ -1,4 +1,7 @@
 <resources>
+    <string name="time">Time</string>
+    <string name="show_only_fails">Show fails only</string>
+    <string name="turn_on_off_sound">Sound</string>
     <string name="http_address_example">http://example.com</string>
     <string name="cant_open_url">Can\'t open URL.</string>
     <string name="options">Task options</string>
@@ -22,11 +25,13 @@
     <string name="set_number_of_tries_for_ping">Number of tries for \"ping\"</string>
     <string name="set_number_of_tries_for_portcheck">Number of tries for \"portcheck\"</string>
     <string name="failed_execution_notification_text">Execution of one or more tasks failed.</string>
-    <string name="task_execution_on">Task execution is on.</string>
-    <string name="task_execution_off">Task execution is off.</string>
+    <string name="task_execution_on">All tasks execution is on.</string>
+    <string name="task_execution_off">All tasks execution is off.</string>
+    <string name="task_is_off">This task is off now.</string>
+    <string name="task_is_on">This task is on now.</string>
     <string name="update_all_tasks">Update tasks</string>
     <string name="last_session_was">Last successful session was</string>
-    <string name="your_logs_will_be_here">Your logs will be here.</string>
+    <string name="your_logs_will_be_here">No logs yet.</string>
     <string name="date_column">Date</string>
     <string name="invalid_input">Invalid input</string>
     <string name="yes">Yes</string>

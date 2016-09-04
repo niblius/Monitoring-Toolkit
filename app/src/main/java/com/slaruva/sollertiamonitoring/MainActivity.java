@@ -106,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         on_off.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                Context context = getApplicationContext();
+                Context context = MainActivity.this;
                 if(isChecked)
                     TaskManagerService.setAlarm(context);
                 else

@@ -6,6 +6,9 @@ import android.widget.LinearLayout;
 
 import com.orm.SugarRecord;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 public abstract class SimpleLog extends SugarRecord {
     public enum State {
         SUCCESS,
@@ -65,4 +68,11 @@ public abstract class SimpleLog extends SugarRecord {
 
     public abstract State getState();
     public abstract void setState(State s);
+
+    public abstract long getDatetime();
+    public String getDatetime(SimpleDateFormat formatter) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(getDatetime());
+        return formatter.format(calendar.getTime());
+    }
 }

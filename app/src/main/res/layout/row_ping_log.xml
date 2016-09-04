@@ -5,6 +5,8 @@
     android:orientation="vertical"
     android:id="@+id/element">
 
+    <include layout="@layout/day_header"/>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -15,7 +17,7 @@
             android:layout_height="wrap_content"
             android:text="0.03"
             android:id="@+id/min"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center" />
 
 
@@ -24,7 +26,7 @@
             android:layout_height="wrap_content"
             android:text="3.134"
             android:id="@+id/max"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center" />
 
 
@@ -33,7 +35,7 @@
             android:layout_height="wrap_content"
             android:text="1.033"
             android:id="@+id/avg"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center" />
 
         <TextView
@@ -41,14 +43,14 @@
             android:layout_height="wrap_content"
             android:text="0.333"
             android:id="@+id/mdev"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center" />
 
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center">
 
             <TextView
@@ -75,7 +77,7 @@
             android:layout_width="0dip"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:gravity="center" >
             <TextView
                 android:layout_width="wrap_content"
@@ -87,19 +89,13 @@
                 android:layout_height="wrap_content"
                 android:text="%"/>
         </LinearLayout>
-    </LinearLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center">
         <TextView
-            android:paddingStart="10dip"
-            android:paddingLeft="10dip"
-            android:layout_width="wrap_content"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:text="12/05/15 11:06:00"
-            android:id="@+id/log_date"/>
+            android:text="10:22 PM"
+            android:id="@+id/time"
+            android:layout_weight="3"
+            android:gravity="center" />
     </LinearLayout>
-
 </LinearLayout>

@@ -5,6 +5,8 @@
     android:orientation="vertical"
     android:id="@+id/element">
 
+    <include layout="@layout/day_header"/>
+
     <LinearLayout
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -53,8 +55,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="/"
-                android:id="@+id/textView9" />
+                android:text="/" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -63,19 +64,12 @@
                 android:id="@+id/transmitted" />
         </LinearLayout>
 
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center">
         <TextView
-            android:paddingStart="10dip"
-            android:paddingLeft="10dip"
-            android:layout_width="wrap_content"
+            android:layout_width="0dip"
             android:layout_height="wrap_content"
-            android:text="12/05/15 11:06:00"
-            android:id="@+id/log_date"/>
+            android:text="10:22"
+            android:id="@+id/time"
+            android:layout_weight="1"
+            android:gravity="center" />
     </LinearLayout>
-
 </LinearLayout>

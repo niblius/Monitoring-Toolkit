@@ -45,6 +45,8 @@
                     android:id="@+id/port" />
             </LinearLayout>
 
+            <include layout="@layout/show_only_fails"/>
+
             <TableLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -80,6 +82,13 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="@string/lossPing"
+                        android:gravity="center"/>
+
+                    <TextView
+                        android:layout_width="0dip"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="@string/time"
                         android:gravity="center"/>
                 </TableRow>
             </TableLayout>

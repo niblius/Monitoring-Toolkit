@@ -1,27 +1,14 @@
 package com.slaruva.sollertiamonitoring;
 
 import android.app.Application;
-import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Environment;
-import android.support.design.widget.Snackbar;
+import android.preference.PreferenceManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.orm.SugarContext;
-import com.orm.SugarDb;
-import com.orm.util.SugarConfig;
 import com.slaruva.sollertiamonitoring.integrity.Integrity;
 import com.slaruva.sollertiamonitoring.ping.Ping;
-import com.slaruva.sollertiamonitoring.ping.PingLog;
 import com.slaruva.sollertiamonitoring.portcheck.PortCheck;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.nio.channels.FileChannel;
-import java.text.SimpleDateFormat;
-import java.util.List;
 
 /**
  * Performs basic initialization of:
@@ -33,6 +20,7 @@ import java.util.List;
 public class Sollertia extends Application {
     private static final String TAG = "Sollertia";
     private SharedPreferences sharedPref;
+    private SharedPreferences.Editor editor;
 
     @Override
     public void onCreate() {
@@ -49,7 +37,6 @@ public class Sollertia extends Application {
         boolean wasStated = sharedPref.getBoolean(
                 PREFERENCE_WAS_PREVIOUSLY_STARTED, Boolean.FALSE);
         if(!wasStated) {
-            SharedPreferences.Editor editor = sharedPref.edit();
             editor.putBoolean(PREFERENCE_WAS_PREVIOUSLY_STARTED, Boolean.TRUE);
             editor.apply();
             TaskManagerService.setAlarm(this);
@@ -73,7 +60,7 @@ public class Sollertia extends Application {
     }
 
     private void setPreferences() {
-        this.sharedPref = getSharedPreferences(
-                getString(R.string.preference_main), MODE_PRIVATE);
+        this.sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sharedPref.edit();
     }
 }

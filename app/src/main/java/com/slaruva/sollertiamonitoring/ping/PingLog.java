@@ -14,12 +14,6 @@ public class PingLog extends SimpleLog {
     private long datetime;
     private int state;
 
-    public String getDatetime(SimpleDateFormat formatter) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(datetime);
-        return formatter.format(calendar.getTime());
-    }
-
     public PingLog(String response, Ping task, State succeeded) {
         this.setState(succeeded);
         this.response = response;
@@ -78,6 +72,7 @@ public class PingLog extends SimpleLog {
         this.transmitted = transmitted;
     }
 
+    @Override
     public long getDatetime() {
         return datetime;
     }

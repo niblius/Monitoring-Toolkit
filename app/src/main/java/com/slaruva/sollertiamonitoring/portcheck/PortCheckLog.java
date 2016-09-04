@@ -60,17 +60,6 @@ public class PortCheckLog extends SimpleLog {
         this.transmitted = transmitted;
     }
 
-    /**
-     * Returns datetime in specific format
-     * @param formatter particular format in which datetime will be represented
-     * @return string of datetime in given format
-     */
-    public String getDatetime(SimpleDateFormat formatter) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(datetime);
-        return formatter.format(calendar.getTime());
-    }
-
     public PortCheckLog() { }
 
     public PortCheckLog(String response, PortCheck task, State succeeded) {
@@ -88,6 +77,7 @@ public class PortCheckLog extends SimpleLog {
         return response;
     }
 
+    @Override
     public long getDatetime() {
         return datetime;
     }

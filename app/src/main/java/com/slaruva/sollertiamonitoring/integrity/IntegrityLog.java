@@ -18,17 +18,6 @@ public class IntegrityLog extends SimpleLog {
     private int state;
     private String response = ""; // used only in case of fail
 
-    /**
-     * Returns datetime in specific format
-     * @param formatter particular format in which datetime will be represented
-     * @return string of datetime in given format
-     */
-    public String getDatetime(SimpleDateFormat formatter) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(datetime);
-        return formatter.format(calendar.getTime());
-    }
-
     public IntegrityLog() { }
 
     public IntegrityLog(String response, Integrity task, State succeeded) {
@@ -50,6 +39,7 @@ public class IntegrityLog extends SimpleLog {
         return response;
     }
 
+    @Override
     public long getDatetime() {
         return datetime;
     }

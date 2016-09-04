@@ -12,34 +12,22 @@ import android.widget.TextView;
 
 import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.SimpleLog;
+import com.slaruva.sollertiamonitoring.SimpleLogsAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 // TODO view holders
-public class PingLogsAdapter extends ArrayAdapter<PingLog> {
-    private int layoutResourceId;
-
+public class PingLogsAdapter extends SimpleLogsAdapter<PingLog> {
     PingLogsAdapter(Context context, int layoutResourceId, List<PingLog> logs) {
         super(context, layoutResourceId, logs);
-        this.layoutResourceId = layoutResourceId;
     }
 
-    private static final SimpleDateFormat StandardFormat =
-            new SimpleDateFormat("dd/MM/yyyy hh:mm:ss a", Locale.US);
     @Override
     @SuppressLint("DefaultLocale")
-    public View getView(int position, View convertView, ViewGroup parent) {
-        if(convertView == null) {
-            LayoutInflater inflater = (LayoutInflater)parent.getContext()
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            convertView = inflater.inflate(layoutResourceId, null);
-        }
-
+    protected void modifyView(int position, View convertView, ViewGroup parent) {
         PingLog log = getItem(position);
 
-        TextView date = (TextView)convertView.findViewById(R.id.log_date);
-        date.setText(log.getDatetime(StandardFormat));
         TextView min = (TextView)convertView.findViewById(R.id.min);
         min.setText(String.format("%.1f", log.getMin()));
         TextView max = (TextView)convertView.findViewById(R.id.max);
@@ -54,10 +42,5 @@ public class PingLogsAdapter extends ArrayAdapter<PingLog> {
         received.setText(String.format("%d", log.getReceived()));
         TextView transmitted = (TextView)convertView.findViewById(R.id.transmitted);
         transmitted.setText(String.format("%d", log.getTransmitted()));
-
-        LinearLayout element = (LinearLayout)convertView.findViewById(R.id.element);
-        SimpleLog.State.toColor(log.getState(), element);
-
-        return convertView;
     }
 }
