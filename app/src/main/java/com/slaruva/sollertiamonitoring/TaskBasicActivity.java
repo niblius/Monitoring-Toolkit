@@ -6,7 +6,6 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -47,6 +46,7 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
     protected long tId;
     protected Task task;
     protected CheckBox showFailsOnlyCheck;
+    protected ListView logList;
 
     protected abstract Class _getLogClass();
     protected abstract Class _getTaskClass();
@@ -92,7 +92,7 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
 
         boolean show_failed_only = getShowFailsPref();
         List<L> logs = getFirstPageLogsNewestFirst(show_failed_only);
-        ListView logList = (ListView)findViewById(R.id.log_list);
+        logList = (ListView) findViewById(R.id.log_list);
         adapter = createAdapter(this, getLogsLayoutID(), logs);
         logList.setAdapter(adapter);
         logList.setOnScrollListener(this);
@@ -193,7 +193,7 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
         }
     }
 
-    protected void clearAndUpdateAdapter(boolean show_fails) {;
+    protected void clearAndUpdateAdapter(boolean show_fails) {
         AsyncLogsUpdater async = new AsyncLogsUpdater(show_fails);
         async.execute();
     }

@@ -1,4 +1,8 @@
 <resources>
+    <string name="number_of_tries_description">How many attempts will be done.</string>
+    <string name="warning_limit_description">Number of failed logs before notification.</string>
+    <string name="priority_description">The higher priority, the higher in order.</string>
+    <string name="server_responce_copied">The server response for this log is copied to clipboard.</string>
     <string name="priority">Priority</string>
     <string name="time">Time</string>
     <string name="show_only_fails">Show fails only</string>

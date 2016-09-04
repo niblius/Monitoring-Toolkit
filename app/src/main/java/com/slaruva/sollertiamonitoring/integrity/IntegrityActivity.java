@@ -1,12 +1,17 @@
 package com.slaruva.sollertiamonitoring.integrity;
 
 import android.annotation.SuppressLint;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.TaskBasicActivity;
@@ -38,6 +43,21 @@ public class IntegrityActivity extends TaskBasicActivity<Integrity, IntegrityLog
         init(savedInstanceState);
         setIpToField();
         setRegexpToField();
+
+        logList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Integrity response",
+                        adapter.getItem(position).getResponse());
+                clipboard.setPrimaryClip(clip);
+
+                Toast t = Toast.makeText(getApplicationContext(),
+                        getString(R.string.server_responce_copied),
+                        Toast.LENGTH_SHORT);
+                t.show();
+            }
+        });
     }
 
     @SuppressLint("DefaultLocale")
