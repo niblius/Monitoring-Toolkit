@@ -113,7 +113,7 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 setShowFailsPref(isChecked);
-                clearAndUpdateAdapter(isChecked);
+                clearAndUpdateAdapter(isChecked, PAGE_SIZE);
             }
         });
     }
@@ -121,7 +121,7 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
     class BasicOnRefreshListener implements SwipeRefreshLayout.OnRefreshListener {
         @Override
         public void onRefresh() {
-            clearAndUpdateAdapter(getShowFailsPref());
+            clearAndUpdateAdapter(getShowFailsPref(), 0);
         }
     }
     protected SwipeRefreshLayout.OnRefreshListener getOnRefreshListener() {
@@ -169,8 +169,11 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
 
     private class AsyncLogsUpdater extends AsyncTask<Integer, Integer, List<L>> {
         private boolean show_fails;
-        public AsyncLogsUpdater(boolean show_fails) {
+        private int amount;
+
+        public AsyncLogsUpdater(boolean show_fails, int amount) {
             this.show_fails = show_fails;
+            this.amount = amount;
         }
 
         @Override
@@ -180,8 +183,9 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
 
         @Override
         protected List<L> doInBackground(Integer... params) {
-            long count = (adapter.getCount() == 0) ? PAGE_SIZE : adapter.getCount();
-            return getLogs(0, count, show_fails);
+            if (amount == 0)
+                amount = adapter.getCount();
+            return getLogs(0, amount, show_fails);
         }
 
         @Override
@@ -193,8 +197,8 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
         }
     }
 
-    protected void clearAndUpdateAdapter(boolean show_fails) {
-        AsyncLogsUpdater async = new AsyncLogsUpdater(show_fails);
+    protected void clearAndUpdateAdapter(boolean show_fails, int amount) {
+        AsyncLogsUpdater async = new AsyncLogsUpdater(show_fails, amount);
         async.execute();
     }
 
@@ -314,7 +318,7 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
         super.onResume();
         // updating task, since we could come from task options page.
         task = (T)T.findById(_getTaskClass(), tId);
-        clearAndUpdateAdapter(getShowFailsPref());
+        clearAndUpdateAdapter(getShowFailsPref(), 0);
     }
 
     @Override
