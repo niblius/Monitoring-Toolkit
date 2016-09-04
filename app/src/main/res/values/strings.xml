@@ -1,4 +1,5 @@
 <resources>
+    <string name="priority">Priority</string>
     <string name="time">Time</string>
     <string name="show_only_fails">Show fails only</string>
     <string name="turn_on_off_sound">Sound</string>

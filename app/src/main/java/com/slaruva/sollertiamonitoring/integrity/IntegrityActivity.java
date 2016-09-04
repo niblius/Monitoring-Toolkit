@@ -14,8 +14,6 @@ import com.slaruva.sollertiamonitoring.TaskBasicActivity;
 import java.util.List;
 
 public class IntegrityActivity extends TaskBasicActivity<Integrity, IntegrityLog> {
-    private Integrity integ;
-
     @Override
     protected Class _getLogClass() {
         return IntegrityLog.class;
@@ -38,9 +36,6 @@ public class IntegrityActivity extends TaskBasicActivity<Integrity, IntegrityLog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_integrity);
         init(savedInstanceState);
-
-        integ = (Integrity) task;
-
         setIpToField();
         setRegexpToField();
     }
@@ -48,7 +43,7 @@ public class IntegrityActivity extends TaskBasicActivity<Integrity, IntegrityLog
     @SuppressLint("DefaultLocale")
     private void setRegexpToField() {
         EditText regexp = (EditText) findViewById(R.id.regexp);
-        regexp.setText(integ.getRegexp());
+        regexp.setText(((Integrity)task).getRegexp());
     }
 
     @Override
@@ -58,6 +53,7 @@ public class IntegrityActivity extends TaskBasicActivity<Integrity, IntegrityLog
 
     @Override
     public void onSave(MenuItem item) {
+        Integrity integ = ((Integrity)task);
         EditText ip = (EditText) findViewById(R.id.ip);
         if (!integ.setIp(ip.getText().toString())) {
             errorVisibilityOn();

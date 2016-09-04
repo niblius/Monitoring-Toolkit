@@ -6,6 +6,7 @@ import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.nfc.Tag;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -308,8 +309,11 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     protected void onResume() {
         super.onResume();
+        // updating task, since we could come from task options page.
+        task = (T)T.findById(_getTaskClass(), tId);
         clearAndUpdateAdapter(getShowFailsPref());
     }
 

@@ -48,4 +48,7 @@ public interface Task {
 
     public int getNumberOfTries();
     public void setNumberOfTries(int n);
+
+    public int getPriority();
+    public void setPriority(int priority);
 }

@@ -14,8 +14,6 @@ import com.slaruva.sollertiamonitoring.TaskBasicActivity;
 import java.util.List;
 
 public class PortCheckActivity extends TaskBasicActivity<PortCheck, PortCheckLog> {
-    private PortCheck pc;
-
     @Override
     protected Class _getLogClass() {
         return PortCheckLog.class;
@@ -38,9 +36,6 @@ public class PortCheckActivity extends TaskBasicActivity<PortCheck, PortCheckLog
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_portcheck);
         init(savedInstanceState);
-
-        pc = (PortCheck) task;
-
         setIpToField();
         setPortToField();
     }
@@ -48,7 +43,7 @@ public class PortCheckActivity extends TaskBasicActivity<PortCheck, PortCheckLog
     @SuppressLint("DefaultLocale")
     private void setPortToField() {
         EditText port = (EditText) findViewById(R.id.port);
-        port.setText(String.format("%d", pc.getPort()));
+        port.setText(String.format("%d", ((PortCheck) task).getPort()));
     }
 
     @Override
@@ -58,6 +53,7 @@ public class PortCheckActivity extends TaskBasicActivity<PortCheck, PortCheckLog
 
     @Override
     public void onSave(MenuItem item) {
+        PortCheck pc = (PortCheck) task;
         EditText ip = (EditText) findViewById(R.id.ip);
         if (!pc.setIp(ip.getText().toString())) {
             errorVisibilityOn();

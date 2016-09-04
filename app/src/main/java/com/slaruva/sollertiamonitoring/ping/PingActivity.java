@@ -13,8 +13,6 @@ import com.slaruva.sollertiamonitoring.TaskBasicActivity;
 import java.util.List;
 
 public class PingActivity extends TaskBasicActivity<Ping, PingLog> {
-    private Ping ping;
-
     @Override
     protected Class _getLogClass() {
         return PingLog.class;
@@ -36,9 +34,6 @@ public class PingActivity extends TaskBasicActivity<Ping, PingLog> {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ping);
         init(savedInstanceState);
-
-        ping = (Ping)task;
-
         setIpToField();
     }
 
@@ -49,6 +44,7 @@ public class PingActivity extends TaskBasicActivity<Ping, PingLog> {
 
     @Override
     public void onSave(MenuItem item) {
+        Ping ping = (Ping)task;
         EditText ip = (EditText) findViewById(R.id.ip);
         if (!ping.setIp(ip.getText().toString())) {
             errorVisibilityOn();

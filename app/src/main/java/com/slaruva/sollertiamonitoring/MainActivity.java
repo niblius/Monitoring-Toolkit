@@ -26,6 +26,8 @@ import android.widget.Switch;
 import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
 import java.util.logging.Logger;
@@ -150,7 +152,33 @@ public class MainActivity extends AppCompatActivity {
         }
         @Override
         protected List<Task> doInBackground(Integer... params) {
-            return TaskManagerService.getAllTasks();
+            List<Task> tasks = TaskManagerService.getAllTasks();
+            Collections.sort(tasks, new Comparator<Task>() {
+                @Override
+                public int compare(Task lhs, Task rhs) {
+                    // sort them by alert level if both have recent fails
+                    // sort them by alphabet if alert levels are equal, or both have 0 recent fails
+                    // if first one have recent fails and the second one does not, first is greater
+                    // if opposite - smaller.
+
+                    if(lhs.countRecentFailedLogs() > 0 && rhs.countRecentFailedLogs() > 0) {
+                        int lhsAlertLevel = lhs.getPriority() * (int) lhs.countRecentFailedLogs();
+                        int rhsAlertLevel = rhs.getPriority() * (int) rhs.countRecentFailedLogs();
+                        int diff = rhsAlertLevel - lhsAlertLevel;
+                        if (diff == 0) {
+                            return lhs.getIp().compareTo(rhs.getIp());
+                        } else
+                            return diff;
+                    }
+                    else if (lhs.countRecentFailedLogs() > 0)
+                        return -1;
+                    else if (rhs.countRecentFailedLogs() > 0)
+                        return 1;
+                    else
+                        return lhs.getIp().compareTo(rhs.getIp());
+                }
+            });
+            return tasks;
         }
         @Override
         protected void onPostExecute(List<Task> tasks) {

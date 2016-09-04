@@ -39,6 +39,17 @@ public class PortCheck extends SugarRecord implements Task {
     private int warningLimit = 1;
     private int numberOfTries = 2;
     private boolean enabled = true;
+    private int priority = 10;
+
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+
+    @Override
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
 
     @Override
     public int getNumberOfTries() {

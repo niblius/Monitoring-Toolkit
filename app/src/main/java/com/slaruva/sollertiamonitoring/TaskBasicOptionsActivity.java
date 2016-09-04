@@ -7,6 +7,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.EditText;
@@ -15,11 +16,14 @@ import android.widget.Switch;
 import com.orm.SugarRecord;
 
 public abstract class TaskBasicOptionsActivity <T extends SugarRecord & Task> extends AppCompatActivity {
+    private String TAG = "TaskBasicOptionsActivity";
+
     protected Toolbar toolbar;
     protected T task;
 
     protected EditText tries;
     protected EditText warningLimit;
+    protected EditText priority;
     protected Switch on_off;
 
     private void initToolbar(Bundle savedInstanceState) {
@@ -49,17 +53,37 @@ public abstract class TaskBasicOptionsActivity <T extends SugarRecord & Task> ex
         task = (T)T.findById(_getTaskClass(), tId);
 
         tries = (EditText) findViewById(R.id.tries);
-        warningLimit = (EditText) findViewById(R.id.warning);
-        on_off = (Switch) findViewById(R.id.is_on);
-
         tries.setText(Integer.toString(task.getNumberOfTries()));
         tries.addTextChangedListener(new OnTriesChangeListener());
 
+        warningLimit = (EditText) findViewById(R.id.warning);
         warningLimit.setText(Integer.toString(task.getWarningLimit()));
         warningLimit.addTextChangedListener(new OnWarningLimitChangeListener());
 
+        on_off = (Switch) findViewById(R.id.is_on);
         on_off.setChecked(task.isEnabled());
         on_off.setOnCheckedChangeListener(new OnEnabledChangeListener());
+
+        priority = (EditText) findViewById(R.id.priority);
+        priority.setText(Integer.toString(task.getPriority()));
+        priority.addTextChangedListener(new OnPriorityChangeListener());
+    }
+
+    class OnPriorityChangeListener implements TextWatcher {
+        public void onTextChanged(CharSequence s, int start,
+                                  int before, int count) { }
+
+        public void afterTextChanged(Editable s) {
+            String text = s.toString();
+            if(!TextUtils.isEmpty(text)) {
+                int val = Integer.valueOf(text);
+                task.setPriority(val);
+                task.save();
+            }
+        }
+
+        public void beforeTextChanged(CharSequence s, int start,
+                                      int count, int after) { }
     }
 
     class OnTriesChangeListener implements TextWatcher {

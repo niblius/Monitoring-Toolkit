@@ -32,11 +32,23 @@ import java.util.concurrent.TimeUnit;
 
 public class Ping extends SugarRecord implements Task {
     //todo add ping time, %loss and so on
+    private static final String TAG = "Ping";
+
     private String ip;
     private int warningLimit = 1;
     private boolean enabled = true;
     private int numberOfTries = 5;
-    private static final String TAG = "Ping";
+    private int priority = 10;
+
+    @Override
+    public int getPriority() {
+        return priority;
+    }
+
+    @Override
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
 
     @Override
     public boolean isEnabled() {
