@@ -324,6 +324,5 @@ public abstract class TaskBasicActivity<T extends SugarRecord & Task, L extends 
     @Override
     protected void onPause() {
         super.onPause();
-        onSave(null);
     }
 }

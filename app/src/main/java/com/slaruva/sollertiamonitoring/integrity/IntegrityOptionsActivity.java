@@ -15,6 +15,8 @@ public class IntegrityOptionsActivity extends TaskBasicOptionsActivity<Integrity
         TextView triesTitle = (TextView) findViewById(R.id.tries_title);
         triesTitle.setVisibility(View.GONE);
         tries.setVisibility(View.GONE); // not used now
+        TextView triesDesc = (TextView) findViewById(R.id.tries_desc);
+        triesDesc.setVisibility(View.GONE);
     }
 
     @Override
