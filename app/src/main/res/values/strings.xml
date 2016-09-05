@@ -1,6 +1,9 @@
 <resources>
+    <string name="successfully_imported">Successfully imported.</string>
+    <string name="import_from_file">Import</string>
+    <string name="export_to_file">Export</string>
     <string name="response_saved">Saved into</string>
-    <string name="not_able_to_save">An external storage is not available, cannot save the log.</string>
+    <string name="not_able_to_save">An external storage is not available.</string>
     <string name="next_log">Next</string>
     <string name="previous_log">Previous</string>
     <string name="copy_to_clipboard">Copy to clipboard</string>

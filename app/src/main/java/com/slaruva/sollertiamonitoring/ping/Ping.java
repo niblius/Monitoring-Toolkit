@@ -41,6 +41,12 @@ public class Ping extends SugarRecord implements Task {
     private int priority = 10;
 
     @Override
+    public String getExportString() {
+        return "ping('" + ip + "', '" + warningLimit + "', '" + enabled + "', '" +
+                numberOfTries + "', '" + priority + "');\n";
+    }
+
+    @Override
     public int getPriority() {
         return priority;
     }
@@ -69,9 +75,7 @@ public class Ping extends SugarRecord implements Task {
             log = new PingLog(e.getMessage(), this, SimpleLog.State.FAIL);
         }
         log.save();
-        if(log.getState() == SimpleLog.State.FAIL)
-            return false;
-        return true;
+        return log.getState() != SimpleLog.State.FAIL;
     }
 
     @Override

@@ -14,41 +14,51 @@ public interface Task {
      * Performs execution of the task
      * @param context current context
      */
-    public boolean execute(Context context);
+    boolean execute(Context context);
 
     /**
      * Represents the task (briefly) in View object
      * @param context current context
      * @return View object
      */
-    public View getRowView(Context context, View lastRowView, ViewGroup parent);
+    View getRowView(Context context, View lastRowView, ViewGroup parent);
 
     /**
      * Represents the task (completely) in Activity
      * and returns intent to that activity
      * @return
      */
-    public Intent getIntentToDetailedInfo(Context context);
+    Intent getIntentToDetailedInfo(Context context);
 
-    public long countSuccessfulLogs();
-    public long countAllLogs();
-    public long countAllRecentLogs();
-    public long countFailedLogs(long datetime);
-    public long countRecentFailedLogs();
+    long countSuccessfulLogs();
 
-    public int getWarningLimit();
-    public void setWarningLimit(int n);
+    long countAllLogs();
 
-    public SimpleLog getLastLog();
+    long countAllRecentLogs();
 
-    public String getIp();
+    long countFailedLogs(long datetime);
 
-    public boolean isEnabled();
-    public void setEnabled(boolean b);
+    long countRecentFailedLogs();
 
-    public int getNumberOfTries();
-    public void setNumberOfTries(int n);
+    int getWarningLimit();
 
-    public int getPriority();
-    public void setPriority(int priority);
+    void setWarningLimit(int n);
+
+    SimpleLog getLastLog();
+
+    String getIp();
+
+    boolean isEnabled();
+
+    void setEnabled(boolean b);
+
+    int getNumberOfTries();
+
+    void setNumberOfTries(int n);
+
+    int getPriority();
+
+    void setPriority(int priority);
+
+    String getExportString();
 }

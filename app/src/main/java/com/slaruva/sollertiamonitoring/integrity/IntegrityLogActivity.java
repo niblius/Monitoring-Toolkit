@@ -1,23 +1,19 @@
 package com.slaruva.sollertiamonitoring.integrity;
 
-import android.Manifest;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.slaruva.sollertiamonitoring.ExternalStorage;
 import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.SharedMenuFragment;
 import com.slaruva.sollertiamonitoring.TaskBasicActivity;
@@ -87,22 +83,19 @@ public class IntegrityLogActivity extends AppCompatActivity {
     }
 
     public void onSaveToFile(View v) {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    1);
+        if (ExternalStorage.haveWritePermission(this)) {
+            ExternalStorage.requestWritePermission(this);
             return;
         }
 
-        if (!isExternalStorageWritable()) {
+        if (!ExternalStorage.isExternalStorageWritable()) {
             Toast.makeText(getApplicationContext(),
                     getString(R.string.not_able_to_save),
                     Toast.LENGTH_LONG).show();
             return;
         }
         String filename = Long.toString(log.getDatetime()) + ".txt";
-        File logfile = new File(getLogsStorageDir(), filename);
+        File logfile = new File(ExternalStorage.getAppStorageDir(), filename);
         try {
             FileOutputStream outputStream = new FileOutputStream(logfile);
             outputStream.write(log.getResponse().getBytes());
@@ -120,7 +113,7 @@ public class IntegrityLogActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode,
                                            String permissions[], int[] grantResults) {
         switch (requestCode) {
-            case 1: {
+            case ExternalStorage.WRITE_PERMISSION: {
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     onSaveToFile(null);
@@ -130,18 +123,5 @@ public class IntegrityLogActivity extends AppCompatActivity {
                 return;
             }
         }
-    }
-
-    private boolean isExternalStorageWritable() {
-        String state = Environment.getExternalStorageState();
-        return Environment.MEDIA_MOUNTED.equals(state);
-    }
-
-    public File getLogsStorageDir() {
-        File file = new File(Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_DOCUMENTS), "Sollertia");
-        if (!file.exists() && !file.mkdirs())
-            Log.e(TAG, "Directory not created " + file.getPath());
-        return file;
     }
 }

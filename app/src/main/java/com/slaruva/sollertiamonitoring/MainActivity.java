@@ -5,15 +5,12 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -25,12 +22,25 @@ import android.widget.ListView;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.github.angads25.filepicker.controller.DialogSelectionListener;
+import com.github.angads25.filepicker.model.DialogConfigs;
+import com.github.angads25.filepicker.model.DialogProperties;
+import com.github.angads25.filepicker.view.FilePickerDialog;
+import com.slaruva.sollertiamonitoring.integrity.Integrity;
+import com.slaruva.sollertiamonitoring.ping.Ping;
+import com.slaruva.sollertiamonitoring.portcheck.PortCheck;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Main activity of the app, currently responses for displaying
@@ -202,5 +212,162 @@ public class MainActivity extends AppCompatActivity {
     public void onExecuteAllTasks(MenuItem item) {
         Intent intent = new Intent(this, TaskManagerService.class);
         startService(intent);
+    }
+
+    public void onImport(MenuItem item) {
+        if (ExternalStorage.haveReadPermission(this)) {
+            ExternalStorage.requestReadPermission(this);
+            return;
+        }
+
+        DialogProperties properties = new DialogProperties();
+        properties.selection_mode = DialogConfigs.SINGLE_MODE;
+        properties.selection_type = DialogConfigs.FILE_SELECT;
+        properties.root = new File(DialogConfigs.DEFAULT_DIR);
+        properties.extensions = null;
+
+        FilePickerDialog dialog = new FilePickerDialog(MainActivity.this, properties);
+        dialog.setDialogSelectionListener(new DialogSelectionListener() {
+            private final Pattern integrityPattern = Pattern.compile(
+                    "integrity\\(\\'([^']+)\\', \\'([^']+)\\', \\'([^']+)\\', \\'([^']+)\\', \\'([^']+)\\', \\'([^']+)\\'\\);");
+            private final Pattern porcheckPattern = Pattern.compile(
+                    "portcheck\\(\\'([^']+)\\', \\'([^']+)\\', \\'([^']+)\\', \\'([^']+)\\', \\'([^']+)\\', \\'([^']+)\\'\\);");
+            private final Pattern pingPattern = Pattern.compile(
+                    "ping\\(\\'([^']+)\\', \\'([^']+)\\', \\'([^']+)\\', \\'([^']+)\\', \\'([^']+)\\'\\);");
+
+            @Override
+            public void onSelectedFilePaths(String[] filepaths) {
+                String filepath = filepaths[0];
+                File f = new File(filepath);
+                try {
+                    FileReader fr = new FileReader(f);
+                    BufferedReader reader = new BufferedReader(fr);
+                    String ln = null;
+                    Matcher matcher;
+                    while ((ln = reader.readLine()) != null) {
+                        if (ln.startsWith("integrity")) {
+                            matcher = integrityPattern.matcher(ln);
+                            if (matcher.matches()) {
+                                String ip = matcher.group(1), regexp = matcher.group(2);
+                                int warningLimit = Integer.parseInt(matcher.group(3)),
+                                        numberOftries = Integer.parseInt(matcher.group(4)),
+                                        priority = Integer.parseInt(matcher.group(6));
+                                boolean enabled = Boolean.parseBoolean(matcher.group(5));
+                                Integrity integ = new Integrity();
+                                integ.setIp(ip);
+                                integ.setRegexp(regexp);
+                                integ.setWarningLimit(warningLimit);
+                                integ.setNumberOfTries(numberOftries);
+                                integ.setPriority(priority);
+                                integ.setEnabled(enabled);
+                                integ.save();
+                            }
+                        } else if (ln.startsWith("portcheck")) {
+                            matcher = porcheckPattern.matcher(ln);
+                            if (matcher.matches()) {
+                                String ip = matcher.group(1);
+                                int port = Integer.parseInt(matcher.group(2)),
+                                        warningLimit = Integer.parseInt(matcher.group(3)),
+                                        numberOftries = Integer.parseInt(matcher.group(4)),
+                                        priority = Integer.parseInt(matcher.group(6));
+                                boolean enabled = Boolean.parseBoolean(matcher.group(5));
+                                PortCheck pc = new PortCheck();
+                                pc.setIp(ip);
+                                pc.setPort(port);
+                                pc.setWarningLimit(warningLimit);
+                                pc.setNumberOfTries(numberOftries);
+                                pc.setPriority(priority);
+                                pc.setEnabled(enabled);
+                                pc.save();
+                            }
+                        } else if (ln.startsWith("ping")) {
+                            matcher = pingPattern.matcher(ln);
+                            if (matcher.matches()) {
+                                String ip = matcher.group(1);
+                                int warningLimit = Integer.parseInt(matcher.group(2)),
+                                        numberOftries = Integer.parseInt(matcher.group(4)),
+                                        priority = Integer.parseInt(matcher.group(5));
+                                boolean enabled = Boolean.parseBoolean(matcher.group(3));
+                                Ping ping = new Ping();
+                                ping.setIp(ip);
+                                ping.setWarningLimit(warningLimit);
+                                ping.setNumberOfTries(numberOftries);
+                                ping.setPriority(priority);
+                                ping.setEnabled(enabled);
+                                ping.save();
+                            }
+                        }
+                    }
+
+                    reader.close();
+
+                    Toast.makeText(getApplicationContext(),
+                            getString(R.string.successfully_imported),
+                            Toast.LENGTH_SHORT).show();
+                    updateAdapter();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        dialog.show();
+    }
+
+    public void onExport(MenuItem item) {
+        if (ExternalStorage.haveWritePermission(this)) {
+            ExternalStorage.requestWritePermission(this);
+            return;
+        }
+
+        if (!ExternalStorage.isExternalStorageWritable()) {
+            Toast.makeText(getApplicationContext(),
+                    getString(R.string.not_able_to_save),
+                    Toast.LENGTH_LONG).show();
+            return;
+        }
+        String filename = "Sollertia.export";
+        File file = new File(ExternalStorage.getAppStorageDir(), filename);
+        try {
+            FileOutputStream outputStream = new FileOutputStream(file);
+            List<Task> tasks = TaskManagerService.getAllTasks();
+
+            for (Task t : tasks)
+                outputStream.write(t.getExportString().getBytes());
+
+            outputStream.close();
+            Toast t = Toast.makeText(getApplicationContext(),
+                    getString(R.string.response_saved) + " " + file.getPath(),
+                    Toast.LENGTH_LONG);
+            t.show();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case ExternalStorage.WRITE_PERMISSION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    onExport(null);
+                } else {
+                    // do nothing
+                }
+                return;
+            }
+            case ExternalStorage.READ_PEMISSION: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    onImport(null);
+                } else {
+                    // do nothing
+                }
+                return;
+            }
+        }
     }
 }

@@ -15,13 +15,13 @@ import android.widget.TextView;
 
 import com.orm.SugarRecord;
 import com.slaruva.sollertiamonitoring.Helper;
+import com.slaruva.sollertiamonitoring.IpDisplayer;
 import com.slaruva.sollertiamonitoring.PercentageDisplayer;
 import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.SimpleLog;
 import com.slaruva.sollertiamonitoring.StatusDisplayer;
 import com.slaruva.sollertiamonitoring.Task;
 import com.slaruva.sollertiamonitoring.TaskBasicActivity;
-import com.slaruva.sollertiamonitoring.IpDisplayer;
 
 import org.apache.commons.net.telnet.TelnetClient;
 
@@ -40,6 +40,12 @@ public class PortCheck extends SugarRecord implements Task {
     private int numberOfTries = 2;
     private boolean enabled = true;
     private int priority = 10;
+
+    @Override
+    public String getExportString() {
+        return "portcheck('" + ip + "', '" + port + "', '" + warningLimit + "', '" +
+                numberOfTries + "', '" + enabled + "', '" + priority + "');\n";
+    }
 
     @Override
     public int getPriority() {
@@ -89,9 +95,7 @@ public class PortCheck extends SugarRecord implements Task {
     public boolean execute(Context context) {
         PortCheckLog log = getPortResponse(context);
         log.save();
-        if(log.getState() == SimpleLog.State.FAIL)
-            return false;
-        return true;
+        return log.getState() != SimpleLog.State.FAIL;
     }
 
     private SharedPreferences sharedPreferences;

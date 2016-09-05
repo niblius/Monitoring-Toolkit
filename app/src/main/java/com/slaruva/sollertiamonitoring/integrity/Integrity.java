@@ -43,6 +43,12 @@ public class Integrity extends SugarRecord implements Task {
     private int priority = 10;
 
     @Override
+    public String getExportString() {
+        return "integrity('" + ip + "', '" + regexp + "', '" + warningLimit + "', '" +
+                numberOfTries + "', '" + enabled + "', '" + priority + "');\n";
+    }
+
+    @Override
     public int getPriority() {
         return priority;
     }

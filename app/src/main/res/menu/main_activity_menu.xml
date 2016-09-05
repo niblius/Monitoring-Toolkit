@@ -18,4 +18,14 @@
         android:icon="@drawable/update"
         app:showAsAction="ifRoom"
         android:onClick="onExecuteAllTasks"/>
+    <item
+        android:id="@+id/import_from_file"
+        android:title="@string/import_from_file"
+        app:showAsAction="never"
+        android:onClick="onImport" />
+    <item
+        android:id="@+id/export_to_file"
+        android:title="@string/export_to_file"
+        app:showAsAction="never"
+        android:onClick="onExport" />
 </menu>
