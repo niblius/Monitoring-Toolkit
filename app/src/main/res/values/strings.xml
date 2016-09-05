@@ -1,4 +1,10 @@
 <resources>
+    <string name="response_saved">Saved into</string>
+    <string name="not_able_to_save">An external storage is not available, cannot save the log.</string>
+    <string name="next_log">Next</string>
+    <string name="previous_log">Previous</string>
+    <string name="copy_to_clipboard">Copy to clipboard</string>
+    <string name="save_to_file">Save to the file</string>
     <string name="number_of_tries_description">How many attempts will be done.</string>
     <string name="warning_limit_description">Number of failed logs before notification.</string>
     <string name="priority_description">The higher priority, the higher in order.</string>

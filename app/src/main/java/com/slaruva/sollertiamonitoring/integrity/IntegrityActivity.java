@@ -1,8 +1,6 @@
 package com.slaruva.sollertiamonitoring.integrity;
 
 import android.annotation.SuppressLint;
-import android.content.ClipData;
-import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,7 +9,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.slaruva.sollertiamonitoring.R;
 import com.slaruva.sollertiamonitoring.TaskBasicActivity;
@@ -35,6 +32,7 @@ public class IntegrityActivity extends TaskBasicActivity<Integrity, IntegrityLog
         return new IntegrityLogsAdapter(context, layoutResourceId, logs);
     }
 
+    public static final String TASK_LOG_ID_TAG = "TASK_LOG_ID_TAG";
     @SuppressLint("DefaultLocale")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,15 +45,10 @@ public class IntegrityActivity extends TaskBasicActivity<Integrity, IntegrityLog
         logList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ClipboardManager clipboard = (ClipboardManager) getSystemService(CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Integrity response",
-                        adapter.getItem(position).getResponse());
-                clipboard.setPrimaryClip(clip);
-
-                Toast t = Toast.makeText(getApplicationContext(),
-                        getString(R.string.server_responce_copied),
-                        Toast.LENGTH_SHORT);
-                t.show();
+                Intent i = new Intent(getApplicationContext(), IntegrityLogActivity.class);
+                i.putExtra(TaskBasicActivity.TASK_ID_TAG, ((Integrity) task).getId().longValue());
+                i.putExtra(TASK_LOG_ID_TAG, adapter.getItem(position).getId().longValue());
+                startActivity(i);
             }
         });
     }

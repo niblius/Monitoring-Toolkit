@@ -11,6 +11,7 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -26,4 +27,5 @@ dependencies {
     compile 'com.github.satyan:sugar:1.4'
     compile 'commons-net:commons-net:3.3'
     compile 'com.android.support:design:23.1.0'
+
 }

@@ -104,6 +104,7 @@ public class Integrity extends SugarRecord implements Task {
             br = new BufferedReader(new InputStreamReader(is));
             while ((line = br.readLine()) != null) {
                 source.append(line);
+                source.append("\n");
             }
         } catch (IOException exc) {
             (new IntegrityLog(context.getString(R.string.cant_open_url),
@@ -119,9 +120,11 @@ public class Integrity extends SugarRecord implements Task {
         }
 
         String page = source.toString();
+        String singleLinePage = page.replace("\n", "");
 
-        if(Pattern.matches(regexp, page)) {
-            (new IntegrityLog(context.getString(R.string.integrity_success_response), this, SimpleLog.State.SUCCESS)).save();
+        if (Pattern.matches(regexp, singleLinePage)) {
+            (new IntegrityLog(context.getString(R.string.integrity_success_response), this,
+                    SimpleLog.State.SUCCESS)).save();
             return true;
         }
         else {
