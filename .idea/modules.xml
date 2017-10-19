@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/SollertiaMonitoring.iml" filepath="$PROJECT_DIR$/SollertiaMonitoring.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mtoolkit.iml" filepath="$PROJECT_DIR$/mtoolkit.iml" />
     </modules>
   </component>
 </project>
